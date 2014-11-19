@@ -1,0 +1,32 @@
+.event-start, .event-end  {
+  display: inline-block;
+}
+
+.module {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#calendar-container {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+
+  display: inline-block;
+
+  padding: 5px;
+}
+
+.event-container {
+  border-width: 1px;
+  border-color: red;
+  border-style: solid;
+
+  display: block;
+
+  padding: 5px;
+}
+
+.event-time-container {
+  text-align: center;
+}
