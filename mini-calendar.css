@@ -1,4 +1,4 @@
-.event-start, .event-end  {
+.event-start, .event-end, .event-name  {
   display: inline-block;
 }
 
@@ -11,6 +11,7 @@
   border-width: 1px;
   border-color: black;
   border-style: solid;
+  min-width: 130px;
 
   display: inline-block;
 
@@ -21,12 +22,20 @@
   border-width: 1px;
   border-color: red;
   border-style: solid;
-
+  min-height: 50px;
+  min-width: 110px;
   display: block;
+  position: absolute;
 
   padding: 5px;
 }
 
 .event-time-container {
   text-align: center;
+}
+
+.remove-event {
+  display: inline-block;
+  padding: 5px;
+  cursor: pointer;
 }

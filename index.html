@@ -15,7 +15,8 @@
     <input type="button" id="add-event" value="Add Event" />
   </div>
   <div id="calendar-container">
-    
+    <div id="calendar-markers"></div>
+    <div id="calendar-events"></div>
   </div>
   
 
@@ -32,17 +33,20 @@
 
     app.init({
       els: {
-        calendar: '#calendar-container',
+        container: '#calendar-container',
+        calendar: '#calendar-events',
+        markers: '#calendar-markers',
         addEvent: '#add-event',
+        removeEvent: '.remove-event',
         eventName: '#input-name',
         eventStart: '#input-start',
         eventEnd: '#input-end'
       },
       name: 'Chris\'s Calendar',
       events: [
-        { start: 0, end: 10 },
-        { start: 40, end: 60 },
-        { start: 20, end: 50 }
+        { start: 0, end: 10, id: 1 },
+        { start: -150, end: -100, id: 2 },
+        { start: 200, end: 250, id: 3, name: 'Wacky Event' }
       ]
     });
   });
