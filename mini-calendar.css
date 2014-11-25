@@ -21,12 +21,12 @@ body { font-family: sans-serif; }
 /* BORDERS */
 #calendar-markers-wrapper, #calendar-events-wrapper {
   border-width: 1px;
-  border-color: black;
+  border-color: blue;
   border-style: solid;
 }
 .event-container, .marker-container {
   border-width: 1px;
-  border-color: red;
+  border-color: green;
   border-style: solid;
 }
 
