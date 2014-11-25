@@ -26,7 +26,14 @@ MiniCalendar.Calendar = function(userOptions) {
   self.MINUTE_HEIGHT = 1;
   self.HOUR_HEIGHT = self.MINUTE_HEIGHT * 60;
   self.DAY_HEIGHT = self.MINUTE_HEIGHT * 60 * 24;
+  self.CONTAINER_PADDING_PX = 3;
+  self.WIDGET_WIDTH_PX = 250;
+  self.WIDGET_PADDING_PX = 4;
+  self.WIDGET_BORDER_PX = 2;
+  self.WIDGET_OFFSET_PX = self.WIDGET_WIDTH_PX + self.WIDGET_PADDING_PX + self.WIDGET_BORDER_PX;
 
+
+  self.columns = 1;
   self.events = [];
   _.each(self.mergedOptions.events, function(event) {
     self.events.push(new MiniCalendar.Event(event));
@@ -37,29 +44,34 @@ MiniCalendar.Calendar = function(userOptions) {
   console.log(self.name + ' initialized!');
 };
 
-MiniCalendar.Calendar.prototype.mapToColumns = function() {
+MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
   'use strict';
   var self = this;
   console.log('mapToColumns - current Columns', self.events);
   var calendarColumns = [];
-  var sortedEvents = _.sortBy(self.events, self.startSortComparator);
+  var sortedEvents = self.events.sort(self.startSortComparator);
 
-  var groups = [];
-  var currentDay;
-  var lastEnd = -1;
+  var columnGroups = [];
+  var currentColumn;
+  var lastEnd = -100000000000000000000;
   $.each(sortedEvents, function (index, event) {
     var start = event.start;
     var end = event.end;
-    if (!currentDay || lastEnd < start) {
-      currentDay = [];
-      groups.push(currentDay);
+    if (!currentColumn || lastEnd > start) {
+      currentColumn = new Array();
+      columnGroups.push(currentColumn);
     }
-    currentDay.push(event);
+    event.column = columnGroups.length - 1;
+    currentColumn.push(event);
     lastEnd = Math.max(lastEnd, end);
   });
 
-  console.log('mapToColumns - after sort/each', self.events);
-  return currentDay;
+  self.columns = columnGroups.length;
+  self.columnGroups = columnGroups;
+
+  console.log('mapToColumns - after sort/each - self.events', self.events, 'columnGroups', currentColumn);
+  console.log('column groups: ', columnGroups);
+  return columnGroups;
 };
 
 MiniCalendar.Calendar.prototype.startSortComparator = function(firstEvent, secondEvent) {
@@ -67,7 +79,7 @@ MiniCalendar.Calendar.prototype.startSortComparator = function(firstEvent, secon
   if(startDifference) {
     return startDifference;
   } else {
-    var endDifference = firstEvent.end = secondEvent.end;
+    var endDifference = firstEvent.end - secondEvent.end;
     return endDifference;
   }
 };
@@ -163,7 +175,7 @@ MiniCalendar.Calendar.prototype.calcGrid = function() {
 
   // Fix mapToColumns - Currently produces an error with the end time of events. Also make sure the id is fixed
   // // Once mapped to columns, define css property for positioning based on calculating css offsets based on hours, minutes, seconds
-  //var gridColumns = self.mapToColumns();
+  var gridColumns = self.mapToColumnGroups();
   //console.log('gridColumns! - ', gridColumns);
 
   _.each(self.eventsByStart(), function(eventGroup) {
@@ -184,7 +196,7 @@ MiniCalendar.Calendar.prototype.calcOffset = function(minutesPastNine) {
   var self = this;
   return (parseFloat(minutesPastNine) + (9 * 60)) * self.MINUTE_HEIGHT;
 };
-MiniCalendar.Calendar.prototype.getTime = function(minutesPastNine) {
+MiniCalendar.Calendar.prototype.calcDisplayTime = function(minutesPastNine) {
   'use strict';
   var hours = (parseInt(minutesPastNine/60) + 9) > 10 ? (parseInt(minutesPastNine/60) + 9) : '0' + (parseInt(minutesPastNine/60) + 9);
   var minutes = minutesPastNine%60 > 9 ? minutesPastNine%60 : '0' + minutesPastNine%60;
@@ -209,19 +221,25 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   
   var calendarContainer = $(self.calendarEl);
   calendarContainer.html('');
+  (document.getElementById('calendar-events')).style.width = ((self.WIDGET_WIDTH_PX * self.columns) + (self.CONTAINER_PADDING_PX * 2) + (self.WIDGET_BORDER_PX * 2 * self.columns)) + 'px';
   (document.getElementById('calendar-events')).style.height = self.DAY_HEIGHT + 'px';
   (document.getElementById('calendar-markers')).style.height = self.DAY_HEIGHT + 'px';
 
   var tempcontainer = document.createElement('div');
   _.each(self.events, function(event){
+
     console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
     var newEventWidget = self.createWidget(event);
+    if( event.column > 0 ) {
+        newEventWidget.style.left = (self.WIDGET_OFFSET_PX * event.column + (2 * self.WIDGET_BORDER_PX)) + 'px';
+    }
+
     tempcontainer.appendChild(newEventWidget);
   });
+
   calendarContainer.append(tempcontainer);
   $('.event-container').css('position', 'absolute');
   $('.marker-container').css('position', 'absolute');
-
 
   console.log('Drew Grid on el: ' + self.calendarEl);
 };
@@ -229,33 +247,25 @@ MiniCalendar.Calendar.prototype.createWidget = function(event) {
   'use strict';
   var self = this;
 
-  var divEventContainer = document.createElement('div');
-  divEventContainer.classList.add('event-container');
-  divEventContainer.setAttribute('data-event-id', event.id);
-  var CONTAINER_PADDING_PX = 6;
-  divEventContainer.style.height = (event.height - CONTAINER_PADDING_PX) + 'px';
-  if(event.offset < 1) {
-    divEventContainer.style.top = 'auto';
-  } else {
-    divEventContainer.style.top = event.offset + 'px';
-  }
-
+  // Create Event Name Div
   var divEventName = document.createElement('div');
   divEventName.classList.add('event-name');
   var textEventName = document.createTextNode(event.name);
   divEventName.appendChild(textEventName);
-  divEventContainer.appendChild(divEventName);
 
+  // Create Event Start Div
   var divEventStart = document.createElement('div');
   divEventStart.classList.add('event-start');
-  var textEventStart = document.createTextNode(self.getTime(event.start));
+  var textEventStart = document.createTextNode(self.calcDisplayTime(event.start));
   divEventStart.appendChild(textEventStart);
 
+  // Create Event End Div
   var divEventEnd = document.createElement('div');
   divEventEnd.classList.add('event-end');
-  var textEventEnd = document.createTextNode(self.getTime(event.end));
+  var textEventEnd = document.createTextNode(self.calcDisplayTime(event.end));
   divEventEnd.appendChild(textEventEnd);
 
+  // Create Container Element To Display Formatted Time
   var divEventTimeContainer = document.createElement('div');
   divEventTimeContainer.classList.add('event-time-container');
   var textTimeSeparator = document.createTextNode(' - ');
@@ -263,12 +273,25 @@ MiniCalendar.Calendar.prototype.createWidget = function(event) {
   divEventTimeContainer.appendChild(textTimeSeparator);
   divEventTimeContainer.appendChild(divEventEnd);
 
+  // Create Button For Removing Event From Planner
   var divRemoveEventButton = document.createElement('div');
   divRemoveEventButton.classList.add('remove-event');
   var removeEventButtonText = document.createTextNode('remove event');
   divRemoveEventButton.appendChild(removeEventButtonText);
   divRemoveEventButton.addEventListener('click', self.removeEventByEl.bind(self));
 
+  // Create Event Container Element To Hold All Component Elements
+  var divEventContainer = document.createElement('div');
+  divEventContainer.classList.add('event-container');
+  divEventContainer.setAttribute('data-event-id', event.id);
+  divEventContainer.style.height = (event.height - (self.CONTAINER_PADDING_PX * 2)) + 'px';
+  if(event.offset < 1) {
+    divEventContainer.style.top = 'auto';
+  } else {
+    divEventContainer.style.top = event.offset + 'px';
+  }
+
+  // Append All Individual Elements To Event Container
   divEventContainer.appendChild(divEventName);
   divEventContainer.appendChild(divEventTimeContainer);
   divEventContainer.appendChild(divRemoveEventButton);

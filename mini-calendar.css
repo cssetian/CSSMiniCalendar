@@ -49,13 +49,13 @@ body { font-family: sans-serif; }
 /* HEIGHT AND WIDTH  */
 .event-container {
   min-height: 50px;
-  min-width: 110px;
+  min-width: 250px;
 }
 #calendar-markers {
   min-width: 30px;
 }
 #calendar-events {
-  min-width: 130px;
+  min-width: 250px;
 }
 .event-container, .marker-container, #calendar-markers, #calendar-events {
   width: auto;
