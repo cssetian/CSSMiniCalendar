@@ -31,7 +31,7 @@ MiniCalendar.Calendar = function(userOptions) {
   _.each(self.mergedOptions.events, function(event) {
     self.events.push(new MiniCalendar.Event(event));
   });
-
+  self.drawMarkers();
   self.calcGrid();
   self.drawGrid();
   console.log(self.name + ' initialized!');
@@ -158,7 +158,7 @@ MiniCalendar.Calendar.prototype.calcGrid = function() {
 
   _.each(self.events, function(event) {
     event.height = self.calcHeight(event);
-    event.offset = self.calcOffset(event);
+    event.offset = self.calcOffset(event.start);
   });
 
   // Fix mapToColumns - Currently produces an error with the end time of events. Also make sure the id is fixed
@@ -179,10 +179,10 @@ MiniCalendar.Calendar.prototype.calcHeight = function(event) {
   var self = this;
   return (event.end - event.start) * self.MINUTE_HEIGHT;
 };
-MiniCalendar.Calendar.prototype.calcOffset = function(event) {
+MiniCalendar.Calendar.prototype.calcOffset = function(minutesPastNine) {
   'use strict';
   var self = this;
-  return (event.start + (9 * 60)) * self.MINUTE_HEIGHT;
+  return (parseFloat(minutesPastNine) + (9 * 60)) * self.MINUTE_HEIGHT;
 };
 
 MiniCalendar.Calendar.prototype.clearGrid = function() {
@@ -232,13 +232,6 @@ MiniCalendar.Calendar.prototype.createWidget = function(event) {
   divEventName.appendChild(textEventName);
   divEventContainer.appendChild(divEventName);
 
-  var divRemoveEventButton = document.createElement('div');
-  divRemoveEventButton.classList.add('remove-event');
-  var removeEventButtonText = document.createTextNode('X');
-  divRemoveEventButton.appendChild(removeEventButtonText);
-  divRemoveEventButton.addEventListener('click', self.removeEventByEl.bind(self));
-  divEventContainer.appendChild(divRemoveEventButton);
-
   var divEventStart = document.createElement('div');
   divEventStart.classList.add('event-start');
   var textEventStart = document.createTextNode(event.start);
@@ -256,12 +249,35 @@ MiniCalendar.Calendar.prototype.createWidget = function(event) {
   divEventTimeContainer.appendChild(textTimeSeparator);
   divEventTimeContainer.appendChild(divEventEnd);
 
+  var divRemoveEventButton = document.createElement('div');
+  divRemoveEventButton.classList.add('remove-event');
+  var removeEventButtonText = document.createTextNode('remove event');
+  divRemoveEventButton.appendChild(removeEventButtonText);
+  divRemoveEventButton.addEventListener('click', self.removeEventByEl.bind(self));
+
   divEventContainer.appendChild(divEventName);
   divEventContainer.appendChild(divEventTimeContainer);
+  divEventContainer.appendChild(divRemoveEventButton);
 
   return divEventContainer;
 };
 
+MiniCalendar.Calendar.prototype.drawMarkers = function() {
+  'use strict';
+  var self = this;
+  var markersContainer = $(self.markersEl);
+  for(var i = 0; i < 25; i++) {
+    var divMarker = document.createElement('div');
+    divMarker.classList.add('marker-container');
+    var markerText = document.createTextNode(i);
+    var pixelsToNine = (60 * 9 * self.MINUTE_HEIGHT);
+    var pixelsFromNine = (i * 60 * self.MINUTE_HEIGHT);
+    divMarker.style.top = self.calcOffset(pixelsFromNine - pixelsToNine) + 'px';
+
+    divMarker.appendChild(markerText);
+    markersContainer.append(divMarker);
+  }
+};
 MiniCalendar.Calendar.prototype.eventsByStart = function() {
   'use strict';
   var self = this;

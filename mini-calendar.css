@@ -1,41 +1,63 @@
-.event-start, .event-end, .event-name  {
-  display: inline-block;
-}
+body { font-size: 62.5%; }
+.event-container .event-time-container, .marker-container { font-size: 0.7rem; }
+.event-container .event-name { font-size: 0.8rem; }
+.event-container .remove-event { font-size: 0.4rem; }
 
+.marker-container, .event-time-container, .event-name { text-align: center; }
+
+.event-container, .marker-container, .event-name, .event-time-container  { display: block; }
+.event-start, .event-end, .remove-event { display: inline-block; }
+#calendar-events, #calendar-markers, #calendar-events-wrapper { display: inline-block; }
+
+.event-container, .marker-container { position: absolute; }
+#calendar-events, #calendar-markers  { position: relative;}
+#calendar-events-wrapper { position: static; }
+
+
+.remove-event {
+  padding: 5px;
+  cursor: pointer;
+  float: right;
+  vertical-align: bottom;
+}
 .module {
   margin-top: 10px;
   margin-bottom: 10px;
 }
 
-#calendar-container {
+.event-container {
+  min-height: 50px;
+  min-width: 110px;
+}
+.event-container, .marker-container {
+  width: auto;
+  margin: 0px auto;
+
+  margin: 0.5em;
+  border-width: 1px;
+  border-color: red;
+  border-style: solid;
+}
+#calendar-markers {
+  width: 5%;
+
+  border-width: 1px;
+  border-color: red;
+  border-style: solid;
+}
+#calendar-events {
   border-width: 1px;
   border-color: black;
   border-style: solid;
   min-width: 130px;
+  width: auto;
 
-  display: inline-block;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;         /* Opera/IE 8+ */
 
-  padding: 5px;
+  padding: 0.5em;
 }
 
-.event-container {
-  border-width: 1px;
-  border-color: red;
-  border-style: solid;
-  min-height: 50px;
-  min-width: 110px;
-  display: block;
-  position: absolute;
 
-  padding: 5px;
-}
 
-.event-time-container {
-  text-align: center;
-}
-
-.remove-event {
-  display: inline-block;
-  padding: 5px;
-  cursor: pointer;
-}
