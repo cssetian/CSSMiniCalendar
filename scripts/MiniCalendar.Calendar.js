@@ -184,7 +184,12 @@ MiniCalendar.Calendar.prototype.calcOffset = function(minutesPastNine) {
   var self = this;
   return (parseFloat(minutesPastNine) + (9 * 60)) * self.MINUTE_HEIGHT;
 };
-
+MiniCalendar.Calendar.prototype.getTime = function(minutesPastNine) {
+  'use strict';
+  var hours = (parseInt(minutesPastNine/60) + 9) > 10 ? (parseInt(minutesPastNine/60) + 9) : '0' + (parseInt(minutesPastNine/60) + 9);
+  var minutes = minutesPastNine%60 > 9 ? minutesPastNine%60 : '0' + minutesPastNine%60;
+  return hours + ':' + minutes;
+};
 MiniCalendar.Calendar.prototype.clearGrid = function() {
   'use strict';
   var self = this;
@@ -243,12 +248,12 @@ MiniCalendar.Calendar.prototype.createWidget = function(event) {
 
   var divEventStart = document.createElement('div');
   divEventStart.classList.add('event-start');
-  var textEventStart = document.createTextNode(event.start);
+  var textEventStart = document.createTextNode(self.getTime(event.start));
   divEventStart.appendChild(textEventStart);
 
   var divEventEnd = document.createElement('div');
   divEventEnd.classList.add('event-end');
-  var textEventEnd = document.createTextNode(event.end);
+  var textEventEnd = document.createTextNode(self.getTime(event.end));
   divEventEnd.appendChild(textEventEnd);
 
   var divEventTimeContainer = document.createElement('div');

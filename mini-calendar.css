@@ -44,7 +44,6 @@ body { font-family: sans-serif; }
 .event-container, .marker-container, #calendar-markers, #calendar-events {
   /*margin: 0px 2px;*/
   padding: 2px;  /* WHY IS THE PADDING OF 2PX NOT BEING APPLIED TO THE RIGHT SIDE OF EVENT ELEMENTS????? */
-  width: auto;
 }
 
 /* HEIGHT AND WIDTH  */
@@ -57,6 +56,9 @@ body { font-family: sans-serif; }
 }
 #calendar-events {
   min-width: 130px;
+}
+.event-container, .marker-container, #calendar-markers, #calendar-events {
+  width: auto;
 }
 
 
