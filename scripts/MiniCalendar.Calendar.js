@@ -28,9 +28,10 @@ MiniCalendar.Calendar = function(userOptions) {
   self.DAY_HEIGHT = self.MINUTE_HEIGHT * 60 * 24;
   self.CONTAINER_PADDING_PX = 3;
   self.WIDGET_WIDTH_PX = 250;
-  self.WIDGET_PADDING_PX = 4;
-  self.WIDGET_BORDER_PX = 2;
-  self.WIDGET_OFFSET_PX = self.WIDGET_WIDTH_PX + self.WIDGET_PADDING_PX + self.WIDGET_BORDER_PX;
+  self.WIDGET_MARGIN_PX = 4;
+  self.WIDGET_FAKE_MARGIN_PX = 2;
+  self.WIDGET_BORDER_PX = 1;
+  self.WIDGET_OFFSET_PX = self.WIDGET_WIDTH_PX + (self.WIDGET_FAKE_MARGIN_PX * 2) + (self.WIDGET_BORDER_PX * 2);
 
 
   self.columns = 1;
@@ -221,19 +222,18 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   
   var calendarContainer = $(self.calendarEl);
   calendarContainer.html('');
-  (document.getElementById('calendar-events')).style.width = ((self.WIDGET_WIDTH_PX * self.columns) + (self.CONTAINER_PADDING_PX * 2) + (self.WIDGET_BORDER_PX * 2 * self.columns)) + 'px';
+  (document.getElementById('calendar-events')).style.width = (self.columns * self.WIDGET_OFFSET_PX) + 'px';
   (document.getElementById('calendar-events')).style.height = self.DAY_HEIGHT + 'px';
   (document.getElementById('calendar-markers')).style.height = self.DAY_HEIGHT + 'px';
 
   var tempcontainer = document.createElement('div');
   _.each(self.events, function(event){
-
     console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
+
     var newEventWidget = self.createWidget(event);
     if( event.column > 0 ) {
-        newEventWidget.style.left = (self.WIDGET_OFFSET_PX * event.column + (2 * self.WIDGET_BORDER_PX)) + 'px';
+      newEventWidget.style.left = (self.WIDGET_OFFSET_PX * event.column + (2 * self.WIDGET_BORDER_PX)) + 'px';
     }
-
     tempcontainer.appendChild(newEventWidget);
   });
 
