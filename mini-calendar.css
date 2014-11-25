@@ -1,62 +1,62 @@
+/* TEXT STYLING */
 body { font-size: 62.5%; }
-.event-container .event-time-container, .marker-container { font-size: 0.7rem; }
-.event-container .event-name { font-size: 0.8rem; }
+.event-container .event-time-container, .marker-container { font-size: 0.6rem; }
+.event-container .event-name { font-size: 0.7rem; }
 .event-container .remove-event { font-size: 0.4rem; }
 
+body { font-family: sans-serif; }
 .marker-container, .event-time-container, .event-name { text-align: center; }
+#calendar-events, #calendar-markers { vertical-align: top; }
 
+/* DISPLAY AND POSITION */
 .event-container, .marker-container, .event-name, .event-time-container  { display: block; }
 .event-start, .event-end, .remove-event { display: inline-block; }
-#calendar-events, #calendar-markers, #calendar-events-wrapper { display: inline-block; }
+#calendar-events, #calendar-markers, #calendar-markers-wrapper, #calendar-events-wrapper { display: inline-block; }
 
+.remove-event { position: absolute; }
+#calendar-events-wrapper, #calendar-markers-wrapper { position: static; }
+#calendar-events, #calendar-markers { position: relative; }
 .event-container, .marker-container { position: absolute; }
-#calendar-events, #calendar-markers  { position: relative;}
-#calendar-events-wrapper { position: static; }
 
+/* BORDERS */
+#calendar-markers-wrapper, #calendar-events-wrapper {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+}
+.event-container, .marker-container {
+  border-width: 1px;
+  border-color: red;
+  border-style: solid;
+}
 
+/* MARGIN AND PADDING */
 .remove-event {
-  padding: 5px;
   cursor: pointer;
-  float: right;
-  vertical-align: bottom;
+  padding: 3px;
+  right: 0;
+  bottom: 0;
 }
 .module {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.event-container, .marker-container, #calendar-markers, #calendar-events {
+  /*margin: 0px 2px;*/
+  padding: 2px;  /* WHY IS THE PADDING OF 2PX NOT BEING APPLIED TO THE RIGHT SIDE OF EVENT ELEMENTS????? */
+  width: auto;
+}
 
+/* HEIGHT AND WIDTH  */
 .event-container {
   min-height: 50px;
   min-width: 110px;
 }
-.event-container, .marker-container {
-  width: auto;
-  margin: 0px auto;
-
-  margin: 0.5em;
-  border-width: 1px;
-  border-color: red;
-  border-style: solid;
-}
 #calendar-markers {
-  width: 5%;
-
-  border-width: 1px;
-  border-color: red;
-  border-style: solid;
+  min-width: 30px;
 }
 #calendar-events {
-  border-width: 1px;
-  border-color: black;
-  border-style: solid;
   min-width: 130px;
-  width: auto;
-
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-  box-sizing: border-box;         /* Opera/IE 8+ */
-
-  padding: 0.5em;
 }
 
 

@@ -7,7 +7,7 @@
   <link rel="stylesheet" type="text/css" href="mini-calendar.css">
 </head>
 <body>
-  <div class="module info">Add an event to the calendar using the interface below.</div>
+  <div class="module info"><h2>Add an event to the calendar using the interface below.</h2></div>
   <div class="module input">
     <input type="text" id="input-name" placeholder="Event Name" />
     <input type="text" id="input-start" placeholder="Event Start" />
@@ -15,7 +15,9 @@
     <input type="button" id="add-event" value="Add Event" />
   </div>
   <div id="calendar-container">
-    <div id="calendar-markers"></div>
+    <div id="calendar-markers-wrapper">
+      <div id="calendar-markers"></div>
+    </div>
     <div id="calendar-events-wrapper">
       <div id="calendar-events"></div>
     </div>
@@ -47,9 +49,12 @@
       },
       name: 'Chris\'s Calendar',
       events: [
-        { start: 0, end: 10, id: 1 },
-        { start: -150, end: -100, id: 2 },
-        { start: 200, end: 250, id: 3, name: 'Wacky Event' }
+        { start: 0, end: 60, id: 1 },
+        { start: 60, end: 120, id: 2 },
+        { start: 120, end: 180, id: 3 },
+        { start: 180, end: 240, id: 4 },
+        { start: 240, end: 300, id: 5, name: 'Wacky Event' },
+        { start: 350, end: 400, id: 6, name: 'Chris\'s weird and crazy-fun Wacky Event' }
       ]
     });
   });

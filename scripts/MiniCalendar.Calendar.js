@@ -207,11 +207,15 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   (document.getElementById('calendar-events')).style.height = self.DAY_HEIGHT + 'px';
   (document.getElementById('calendar-markers')).style.height = self.DAY_HEIGHT + 'px';
 
+  var tempcontainer = document.createElement('div');
   _.each(self.events, function(event){
     console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
     var newEventWidget = self.createWidget(event);
-    calendarContainer.append(newEventWidget);
+    tempcontainer.appendChild(newEventWidget);
   });
+  calendarContainer.append(tempcontainer);
+  $('.event-container').css('position', 'absolute');
+  $('.marker-container').css('position', 'absolute');
 
 
   console.log('Drew Grid on el: ' + self.calendarEl);
@@ -223,8 +227,13 @@ MiniCalendar.Calendar.prototype.createWidget = function(event) {
   var divEventContainer = document.createElement('div');
   divEventContainer.classList.add('event-container');
   divEventContainer.setAttribute('data-event-id', event.id);
-  divEventContainer.style.height = event.height + 'px';
-  divEventContainer.style.top = event.offset + 'px';
+  var CONTAINER_PADDING_PX = 6;
+  divEventContainer.style.height = (event.height - CONTAINER_PADDING_PX) + 'px';
+  if(event.offset < 1) {
+    divEventContainer.style.top = 'auto';
+  } else {
+    divEventContainer.style.top = event.offset + 'px';
+  }
 
   var divEventName = document.createElement('div');
   divEventName.classList.add('event-name');
@@ -265,14 +274,27 @@ MiniCalendar.Calendar.prototype.createWidget = function(event) {
 MiniCalendar.Calendar.prototype.drawMarkers = function() {
   'use strict';
   var self = this;
+  var markerText;
   var markersContainer = $(self.markersEl);
-  for(var i = 0; i < 25; i++) {
+  for(var i = 0; i < 24; i++) {
     var divMarker = document.createElement('div');
     divMarker.classList.add('marker-container');
     var markerText = document.createTextNode(i);
     var pixelsToNine = (60 * 9 * self.MINUTE_HEIGHT);
     var pixelsFromNine = (i * 60 * self.MINUTE_HEIGHT);
-    divMarker.style.top = self.calcOffset(pixelsFromNine - pixelsToNine) + 'px';
+    var topOffset = self.calcOffset(pixelsFromNine - pixelsToNine);
+
+    if(topOffset === 0) {
+      divMarker.style.top = 'auto';
+    } else {
+      divMarker.style.top = topOffset + 'px';
+    }
+
+    if(i < 10) {
+      markerText = document.createTextNode('0' + i + ':00');
+    } else {
+      markerText = document.createTextNode(i + ':00');
+    }
 
     divMarker.appendChild(markerText);
     markersContainer.append(divMarker);
