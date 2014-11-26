@@ -199,7 +199,7 @@ MiniCalendar.Calendar.prototype.calcOffset = function(minutesPastNine) {
 };
 MiniCalendar.Calendar.prototype.calcDisplayTime = function(minutesPastNine) {
   'use strict';
-  var hours = (parseInt(minutesPastNine/60) + 9) > 10 ? (parseInt(minutesPastNine/60) + 9) : '0' + (parseInt(minutesPastNine/60) + 9);
+  var hours = (parseInt(minutesPastNine/60) + 9) > 9 ? (parseInt(minutesPastNine/60) + 9) : '0' + (parseInt(minutesPastNine/60) + 9);
   var minutes = minutesPastNine%60 > 9 ? minutesPastNine%60 : '0' + minutesPastNine%60;
   return hours + ':' + minutes;
 };

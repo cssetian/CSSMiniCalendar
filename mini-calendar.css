@@ -33,7 +33,7 @@ body { font-family: sans-serif; }
 /* MARGIN AND PADDING */
 .remove-event {
   cursor: pointer;
-  padding: 3px;
+  padding: 5px;
   right: 0;
   bottom: 0;
 }
@@ -60,6 +60,17 @@ body { font-family: sans-serif; }
 .event-container, .marker-container, #calendar-markers, #calendar-events {
   width: auto;
 }
+
+/* OTHER STYLING */
+.event-container {
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+
+
+
+
+
 
 
 
