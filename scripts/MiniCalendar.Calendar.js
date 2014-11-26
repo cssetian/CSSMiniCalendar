@@ -214,6 +214,14 @@ MiniCalendar.Calendar.prototype.calcGrid = function() {
 
   console.log('Recalculated Grid Params!');
 };
+///
+///
+//      NEED TO IMPLEMENT A CALCULATE_X_OFFSET AND CALCULATE_X_WIDTH FUNCTION, SO THAT WIDGETS CAN BE A % OF THE CONTAINER SIZE
+//
+//
+//
+
+
 MiniCalendar.Calendar.prototype.calcHeight = function(event) {
   'use strict';
   var self = this;

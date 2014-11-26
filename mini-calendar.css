@@ -81,7 +81,8 @@ body { font-family: sans-serif; }
 }
 
 /* MARGIN AND PADDING */
-#calendar-events-wrapper {
+.calendar-app {
+  margin: 10px;
 }
 .remove-event {
   cursor: pointer;
