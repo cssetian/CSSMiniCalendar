@@ -7,11 +7,20 @@ MiniCalendar.Calendar = function(userOptions) {
 
   self.defaultOptions = {
     els: {
-      container: 'calendar-container',
-      calendar: 'container-calendar',
-      markers: 'container-markers'
+      container: '#calendar-container-wrapper',
+      calendar: '#container-calendar',
+      markers: '#container-markers',
+      app: '#calendar-app'
     },
     name: 'Unititled Mini Calendar',
+    widgetWidth: 250,
+    widgetHeight: 40,
+    containerHeight: 720,
+    containerWidth: 620,
+    containerWidthPadding: 10,
+    containerHeightPadding: 10,
+    startTime: 9 * 60,
+    endTime: 21 * 60,
     events: []
   };
   self.mergedOptions = $.extend({}, self.defaultOptions, userOptions);
@@ -19,22 +28,39 @@ MiniCalendar.Calendar = function(userOptions) {
   self.containerEl = self.mergedOptions.els.container;
   self.calendarEl = self.mergedOptions.els.calendar;
   self.markersEl = self.mergedOptions.els.markers;
+
   self.name = self.mergedOptions.name;
+  self.columns = 1;
+  self.startTime = self.mergedOptions.startTime;
+  self.endTime = self.mergedOptions.endTime;
+
+  self.CONTAINER_HEIGHT_PADDING_PX = self.mergedOptions.containerHeight;
+  self.CONTAINER_WIDTH_PADDING_PX = self.mergedOptions.containerWidth;
+  self.CONTAINER_HEIGHT_PX = self.mergedOptions.containerHeight;
+  self.MINUTE_HEIGHT = parseFloat(self.CONTAINER_HEIGHT_PX) / parseFloat(self.endTime - self.startTime);
+
   self.currentEventId = self.mergedOptions.events.length + 1;
   self.nextEventId = function() { return self.currentEventId++; };
 
-  self.MINUTE_HEIGHT = 1;
   self.HOUR_HEIGHT = self.MINUTE_HEIGHT * 60;
   self.DAY_HEIGHT = self.MINUTE_HEIGHT * 60 * 24;
   self.CONTAINER_PADDING_PX = 3;
-  self.WIDGET_WIDTH_PX = 250;
+
+  self.MARKER_HEIGHT_PX = self.MINUTE_HEIGHT * 16;
+  self.MARKER_WIDTH_PX = self.MINUTE_HEIGHT * 30;
+  self.MARKER_OFFSET_PX = 0; //self.MINUTE_HEIGHT * self.MARKER_HEIGHT_PX;
+
+  self.WIDGET_WIDTH_PX = self.mergedOptions.widgetWidth;
   self.WIDGET_MARGIN_PX = 4;
-  self.WIDGET_FAKE_MARGIN_PX = 2;
+  self.WIDGET_HORZ_SPACING_PX = 2;
   self.WIDGET_BORDER_PX = 1;
-  self.WIDGET_OFFSET_PX = self.WIDGET_WIDTH_PX + (self.WIDGET_FAKE_MARGIN_PX * 2) + (self.WIDGET_BORDER_PX * 2);
+  self.WIDGET_OFFSET_PX = self.WIDGET_WIDTH_PX + (self.WIDGET_BORDER_PX * 2);
+
+  self.CALC_COLUMN_WIDTH = function() {
+    return self.columns;
+  };
 
 
-  self.columns = 1;
   self.events = [];
   _.each(self.mergedOptions.events, function(event) {
     self.events.push(new MiniCalendar.Event(event));
@@ -59,6 +85,9 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
     var start = event.start;
     var end = event.end;
     if (!currentColumn || lastEnd > start) {
+      if(columnGroups.length > 0) {
+
+      }
       currentColumn = new Array();
       columnGroups.push(currentColumn);
     }
@@ -138,13 +167,11 @@ MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
   console.log(self.events);
 
   var idList = _.pluck(self.events, 'id');
-  var idListComparator = function(id) { return id === rmId; };
-  var idObjComparator = function(id) { return function(obj) { return obj.id === id; } };
 
   if(_.contains(idList, rmId)) {
     self.events = self.events.filter(function (ev) {
                         return ev.id !== rmId;
-                       });;
+                      });
   } else {
     console.log('ERROR: Event was not found in events list!');
   }
@@ -195,7 +222,7 @@ MiniCalendar.Calendar.prototype.calcHeight = function(event) {
 MiniCalendar.Calendar.prototype.calcOffset = function(minutesPastNine) {
   'use strict';
   var self = this;
-  return (parseFloat(minutesPastNine) + (9 * 60)) * self.MINUTE_HEIGHT;
+  return parseFloat(minutesPastNine) * self.MINUTE_HEIGHT;
 };
 MiniCalendar.Calendar.prototype.calcDisplayTime = function(minutesPastNine) {
   'use strict';
@@ -222,28 +249,31 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   
   var calendarContainer = $(self.calendarEl);
   calendarContainer.html('');
-  (document.getElementById('calendar-events')).style.width = (self.columns * self.WIDGET_OFFSET_PX) + 'px';
-  (document.getElementById('calendar-events')).style.height = self.DAY_HEIGHT + 'px';
-  (document.getElementById('calendar-markers')).style.height = self.DAY_HEIGHT + 'px';
+  (document.getElementById('calendar-events-wrapper')).style.width = (self.columns * self.WIDGET_OFFSET_PX) + 'px';
+  (document.getElementById('calendar-events-wrapper')).style.height = self.containerHeight + 'px';
+  (document.getElementById('calendar-markers')).style.height = self.containerHeight + 'px';
 
-  var tempcontainer = document.createElement('div');
+  //var tempcontainer = document.createElement('div');
   _.each(self.events, function(event){
     console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
 
-    var newEventWidget = self.createWidget(event);
+    var newEventWidget = self.widgetFactory(event);
     if( event.column > 0 ) {
-      newEventWidget.style.left = (self.WIDGET_OFFSET_PX * event.column + (2 * self.WIDGET_BORDER_PX)) + 'px';
+      newEventWidget.style.left = (self.WIDGET_OFFSET_PX * event.column) + 'px';
     }
-    tempcontainer.appendChild(newEventWidget);
+    calendarContainer.append(newEventWidget);
   });
 
-  calendarContainer.append(tempcontainer);
+  //calendarContainer.append(tempcontainer);
+  
   $('.event-container').css('position', 'absolute');
-  $('.marker-container').css('position', 'absolute');
+  $('.marker-major').css('position', 'absolute');
+  $('.marker-minor').css('position', 'absolute');
+  
 
   console.log('Drew Grid on el: ' + self.calendarEl);
 };
-MiniCalendar.Calendar.prototype.createWidget = function(event) {
+MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
   'use strict';
   var self = this;
 
@@ -302,32 +332,90 @@ MiniCalendar.Calendar.prototype.createWidget = function(event) {
 MiniCalendar.Calendar.prototype.drawMarkers = function() {
   'use strict';
   var self = this;
-  var markerText;
+
   var markersContainer = $(self.markersEl);
-  for(var i = 0; i < 24; i++) {
-    var divMarker = document.createElement('div');
-    divMarker.classList.add('marker-container');
-    var markerText = document.createTextNode(i);
-    var pixelsToNine = (60 * 9 * self.MINUTE_HEIGHT);
-    var pixelsFromNine = (i * 60 * self.MINUTE_HEIGHT);
-    var topOffset = self.calcOffset(pixelsFromNine - pixelsToNine);
+  var startHour = (self.startTime)/60;
+  var endHour = (self.endTime)/60;
 
-    if(topOffset === 0) {
-      divMarker.style.top = 'auto';
+  for(var i = self.startTime; i < self.endTime; i = i + 60) {
+    var currentHour = i / 60;
+
+    var minutesAfterStartTime = i - self.startTime;
+    var currentMarkerOffsetPx = minutesAfterStartTime * self.MINUTE_HEIGHT;
+
+    var majorMarker = self.majorMarkerFactory(currentHour);
+    if(currentMarkerOffsetPx === 0) {
+      majorMarker.style.top = 'auto';
     } else {
-      divMarker.style.top = topOffset + 'px';
+      majorMarker.style.top = currentMarkerOffsetPx + 'px';
     }
 
-    if(i < 10) {
-      markerText = document.createTextNode('0' + i + ':00');
-    } else {
-      markerText = document.createTextNode(i + ':00');
-    }
+    var minorMarker = self.minorMarkerFactory(currentHour);
+    minorMarker.style.top = (currentMarkerOffsetPx + 30) + 'px';
 
-    divMarker.appendChild(markerText);
-    markersContainer.append(divMarker);
+    markersContainer.append(majorMarker);
+    markersContainer.append(minorMarker);
   }
 };
+MiniCalendar.Calendar.prototype.minorMarkerFactory = function(militaryHour) {
+  'use strict';
+  var self = this;
+
+  var divTimeLabel = self.createTimeLabel(militaryHour, 30);
+  var divMarker = document.createElement('div');
+  divMarker.classList.add('marker-minor');
+  divMarker.classList.add('right');
+  divMarker.appendChild(divTimeLabel.divTime);
+
+  return divMarker;
+};
+MiniCalendar.Calendar.prototype.majorMarkerFactory = function(militaryHour) {
+  'use strict';
+  var self = this;
+  
+  var divTimeLabel = self.createTimeLabel(militaryHour, 0);
+  var divMarker = document.createElement('div');
+  divMarker.classList.add('marker-major');
+  divMarker.classList.add('right');
+  divMarker.appendChild(divTimeLabel.divTime);
+  divMarker.appendChild(divTimeLabel.divSuffix);
+
+  return divMarker;
+};
+MiniCalendar.Calendar.prototype.createTimeLabel = function(militaryHour, minutes) {
+  'use strict';
+  var self = this;
+  var suffixText;
+  var markerText;
+  var twelveHour;
+
+  if(militaryHour < 13) {
+    twelveHour = militaryHour;
+    suffixText = document.createTextNode('am');
+  } else {
+    twelveHour = militaryHour - 12;
+    suffixText = document.createTextNode('pm');
+  }
+
+  if(minutes < 10) {
+    markerText = document.createTextNode(twelveHour + ':0' + minutes);
+  } else {
+    markerText = document.createTextNode(twelveHour + ':' + minutes);
+  }
+
+  var divTime = document.createElement('span');
+  divTime.classList.add('time');
+  divTime.appendChild(markerText);
+
+  var divSuffix = document.createElement('span');
+  divSuffix.classList.add('suffix');
+  divSuffix.appendChild(suffixText);
+
+  return {
+    divTime: divTime,
+    divSuffix: divSuffix
+  };
+}
 MiniCalendar.Calendar.prototype.eventsByStart = function() {
   'use strict';
   var self = this;

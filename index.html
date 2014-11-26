@@ -7,21 +7,21 @@
   <link rel="stylesheet" type="text/css" href="mini-calendar.css">
 </head>
 <body>
-  <div class="module info"><h2>Add an event to the calendar using the interface below.</h2></div>
+  <div class="module info"><h2>Add an event to the calendar using the inputs below, in units of number of minutes from 9:00AM.</h2></div>
   <div class="module input">
     <input type="text" id="input-name" placeholder="Event Name" />
     <input type="text" id="input-start" placeholder="Event Start" />
     <input type="text" id="input-end" placeholder="Event End" />
     <input type="button" id="add-event" value="Add Event" />
   </div>
-  <div id="calendar-container">
+  <div class="calendar-app">
     <div id="calendar-markers-wrapper">
       <div id="calendar-markers"></div>
     </div>
     <div id="calendar-events-wrapper">
       <div id="calendar-events"></div>
     </div>
-  </div>
+    
   </div>
   
 
@@ -38,9 +38,10 @@
 
     app.init({
       els: {
-        container: '#calendar-container',
+        container: '#calendar-events-wrapper',
         calendar: '#calendar-events',
         markers: '#calendar-markers',
+        app: '#calendar-app',
         addEvent: '#add-event',
         removeEvent: '.remove-event',
         eventName: '#input-name',
@@ -53,7 +54,7 @@
         { start: 180, end: 240, id: 4 },
         { start: 100, end: 180, id: 3 },
         { start: 60, end: 120, id: 2 },
-        { start: 240, end: 300, id: 5, name: 'Wacky Event' },
+        { start: 200, end: 300, id: 5, name: 'Wacky Event' },
         //{ start: 350, end: 400, id: 6, name: 'Chris\'s weird and crazy-fun Wacky Event' }
       ]
     });
