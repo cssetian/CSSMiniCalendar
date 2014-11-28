@@ -6,33 +6,73 @@ body { font-size: 62.5%; }
 
 body { font-family: sans-serif; }
 .marker-container, .event-time-container, .event-name { text-align: center; }
-#calendar-events, #calendar-markers { vertical-align: top; }
+.calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers { vertical-align: top; }
 
 /* DISPLAY AND POSITION */
-.event-container, .marker-major, .marker-minor, .event-name, .event-time-container  { display: block; }
-.calendar-app, .event-start, .event-end, .remove-event { display: inline-block; }
-#calendar-events, #calendar-markers, #calendar-markers-wrapper, #calendar-events-wrapper { display: inline-block; }
+.calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper { vertical-align: top; }
+.event-start, .event-end, .remove-event, #calendar-events-wrapper, #calendar-markers-wrapper { display: inline-block; }
+#calendar-markers-wrapper { position: static; }
+#calendar-events, #calendar-markers, #calendar-markers-wrapper, #calendar-events-wrapper { position: relative; }
+.event-container, .marker-container, .remove-event { position: absolute; box-sizing: border-box; }
 
-.remove-event { position: absolute; }
-#calendar-events-wrapper, #calendar-markers-wrapper { position: static; }
-#calendar-events, #calendar-markers { position: relative; }
-.event-container { position: absolute; }
+/* MARGIN AND PADDING */
+.calendar-app { margin: 10px; }
+.module {  margin: 10px 0; }
+.remove-event {
+  padding: 5px;
+  cursor: pointer;
+  right: 0;
+  bottom: 0;
+}
+.event-container, .marker-container { padding: 2px; }
+#calendar-events-wrapper, #calendar-markers-wrapper { padding: 0 10px; }
+.major-marker .time { padding-right: 4px; }
 
-/* BORDERS */
+/* BORDERS & BACKGROUNDS */
 .event-container {
-  border-width: 1px;
+  border-width: 1px;  
   border-left-width: 5px;
-  border-color: green;
   border-style: solid;
+  border-color: #005e95;
+  background-color: #FFFFFF; 
 }
-.marker-container {
-  border-top-width: 0px;
-  border-bottom-width: 0px;
-  border-right-width: 0px;
-  border-left-width: 0px;
-  border-color: green;
-  border-style: dashed;
+#calendar-events-wrapper {
+  border-width: 2px;
+  border-style: solid;
+  border-color: #005e95;
+  background-color: rgb(211,211,211);
 }
+#calendar-events-background, #calendar-markers {
+  background-size: 10px 60px;
+  background-image: 
+        -webkit-linear-gradient(right, 
+          rgba(211,211,211,1) 0px, 
+          rgba(211,211,211,1) 5px, 
+          rgba(211,211,211,0) 5px, 
+          rgba(211,211,211,0) 10px),
+        -webkit-linear-gradient(top, 
+          rgba(0,128,0,1) 0px, 
+          rgba(0,128,0,1) 1px, 
+          rgba(0,128,0,0) 1px, 
+          rgba(0,128,0,0) 60px);
+}
+
+/* HEIGHT AND WIDTH  */
+#calendar-events-wrapper, #calendar-markers-wrapper {
+  height: 720px;
+}
+.event-container {
+  width: 100%;
+}
+#calendar-events-background {
+  width: 100%;
+  height: 100%;
+}
+#calendar-markers {
+  min-width: 40px;
+}
+
+/* Time Label-Specific Styles */
 .time {
   font-weight: bold;
 }
@@ -40,7 +80,6 @@ body { font-family: sans-serif; }
   font-variant: small-caps;
 }
 .marker-major .time {
-  padding-right: 4px;
   color: #222222;
 }
 .marker-minor, .suffix {
@@ -56,76 +95,6 @@ body { font-family: sans-serif; }
   position: absolute;
   right: 0px;
 }
-
-#calendar-events, #calendar-markers {
-  background-size: 30px 60px;
-  background-image: 
-        -webkit-linear-gradient(right, 
-          rgba(255,255,255,1) 0px, 
-          rgba(255,255,255,1) 5px, 
-          rgba(255,255,255,0) 5px, 
-          rgba(255,255,255,0) 10px, 
-          rgba(255,255,255,1) 10px, 
-          rgba(255,255,255,1) 15px, 
-          rgba(255,255,255,0) 15px, 
-          rgba(255,255,255,0) 20px, 
-          rgba(255,255,255,1) 20px, 
-          rgba(255,255,255,1) 25px, 
-          rgba(255,255,255,0) 25px, 
-          rgba(255,255,255,0) 30px),
-        -webkit-linear-gradient(top, 
-          rgba(0,128,0,1) 0px, 
-          rgba(0,128,0,1) 1px, 
-          rgba(0,128,0,0) 1px, 
-          rgba(0,128,0,0) 60px);
-}
-
-/* MARGIN AND PADDING */
-.calendar-app {
-  margin: 10px;
-}
-.remove-event {
-  cursor: pointer;
-  padding: 5px;
-  right: 0;
-  bottom: 0;
-}
-.module {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.event-container, .marker-container {
-  /*margin: 0px 2px;*/
-  padding: 2px;  /* WHY IS THE PADDING OF 2PX NOT BEING APPLIED TO THE RIGHT SIDE OF EVENT ELEMENTS????? */
-}
-
-/* HEIGHT AND WIDTH  */
-.c2alendar-app {
-  height: 720px;
-}
-#calendar-markers-wrapper {
-  padding: 2px 0px;
-}
-#calendar-events-wrapper {
-  padding: 10px;
-  border-width: 2px;
-  border-style: solid;
-  border-color: #329767;
-  background-color: #D3D3D3;
-  height: 720px;
-}
-.event-container {
-  min-height: 50px;
-  min-width: 250px;
-}
-#calendar-markers {
-  min-width: 40px;
-}
-/* OTHER STYLING */
-.event-container {
-  background-color: white;
-}
-
 
 
 

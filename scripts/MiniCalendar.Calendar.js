@@ -260,6 +260,7 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   (document.getElementById('calendar-events-wrapper')).style.width = (self.columns * self.WIDGET_OFFSET_PX) + 'px';
   (document.getElementById('calendar-events-wrapper')).style.height = self.containerHeight + 'px';
   (document.getElementById('calendar-markers')).style.height = self.containerHeight + 'px';
+  (document.getElementById('calendar-markers-wrapper')).style.width = (self.markerHeight) + 'px';
 
   //var tempcontainer = document.createElement('div');
   _.each(self.events, function(event){
@@ -322,7 +323,7 @@ MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
   var divEventContainer = document.createElement('div');
   divEventContainer.classList.add('event-container');
   divEventContainer.setAttribute('data-event-id', event.id);
-  divEventContainer.style.height = (event.height - (self.CONTAINER_PADDING_PX * 2)) + 'px';
+  divEventContainer.style.height = event.height + 'px';
   if(event.offset < 1) {
     divEventContainer.style.top = 'auto';
   } else {
