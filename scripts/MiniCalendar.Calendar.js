@@ -257,10 +257,6 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   
   var calendarContainer = $(self.calendarEl);
   calendarContainer.html('');
-  (document.getElementById('calendar-events-wrapper')).style.width = (self.columns * self.WIDGET_OFFSET_PX) + 'px';
-  (document.getElementById('calendar-events-wrapper')).style.height = self.containerHeight + 'px';
-  (document.getElementById('calendar-markers')).style.height = self.containerHeight + 'px';
-  (document.getElementById('calendar-markers-wrapper')).style.width = (self.markerHeight) + 'px';
 
   //var tempcontainer = document.createElement('div');
   _.each(self.events, function(event){
@@ -272,13 +268,6 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
     }
     calendarContainer.append(newEventWidget);
   });
-
-  //calendarContainer.append(tempcontainer);
-  
-  $('.event-container').css('position', 'absolute');
-  $('.marker-major').css('position', 'absolute');
-  $('.marker-minor').css('position', 'absolute');
-  
 
   console.log('Drew Grid on el: ' + self.calendarEl);
 };
