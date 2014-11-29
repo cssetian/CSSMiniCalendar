@@ -370,7 +370,7 @@ MiniCalendar.Calendar.prototype.minorMarkerFactory = function(militaryHour) {
   'use strict';
   var self = this;
 
-  var divTimeLabel = self.createTimeLabel(militaryHour, 30);
+  var divTimeLabel = self.timeLabelFactory(militaryHour, 30);
   var divMarker = document.createElement('div');
   divMarker.classList.add('marker-minor');
   divMarker.classList.add('right');
@@ -382,7 +382,7 @@ MiniCalendar.Calendar.prototype.majorMarkerFactory = function(militaryHour) {
   'use strict';
   var self = this;
   
-  var divTimeLabel = self.createTimeLabel(militaryHour, 0);
+  var divTimeLabel = self.timeLabelFactory(militaryHour, 0);
   var divMarker = document.createElement('div');
   divMarker.classList.add('marker-major');
   divMarker.classList.add('right');
@@ -391,7 +391,7 @@ MiniCalendar.Calendar.prototype.majorMarkerFactory = function(militaryHour) {
 
   return divMarker;
 };
-MiniCalendar.Calendar.prototype.createTimeLabel = function(militaryHour, minutes) {
+MiniCalendar.Calendar.prototype.timeLabelFactory = function(militaryHour, minutes) {
   'use strict';
   var self = this;
   var suffixText;
