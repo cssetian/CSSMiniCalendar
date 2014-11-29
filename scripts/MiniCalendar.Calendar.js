@@ -20,7 +20,7 @@ MiniCalendar.Calendar = function(userOptions) {
     containerWidthPadding: 10,
     containerHeightPadding: 10,
     startTime: 9 * 60,
-    endTime: 21 * 60,
+    endTime: (9 + 12) * 60,
     events: []
   };
   self.mergedOptions = $.extend({}, self.defaultOptions, userOptions);
