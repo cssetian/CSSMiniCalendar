@@ -66,8 +66,8 @@ MiniCalendar.Calendar = function(userOptions) {
     self.events.push(new MiniCalendar.Event(event));
   });
   self.drawMarkers();
-  self.calcGrid();
-  self.drawGrid();
+  var mappedCols = self.calcGrid();
+  self.drawGrid(mappedCols);
   console.log(self.name + ' initialized!');
 };
 
@@ -101,7 +101,6 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
     }
 
     columnGroups.push(currentBucket);
-
   }
 
   console.log('mapped the columns! hopefully these are partitioned', columnGroups);
@@ -239,14 +238,15 @@ MiniCalendar.Calendar.prototype.calcGrid = function() {
   // // Once mapped to columns, define css property for positioning based on calculating css offsets based on hours, minutes, seconds
   var gridColumns = self.mapToColumnGroups();
   //console.log('gridColumns! - ', gridColumns);
-
+/*
   _.each(self.eventsByStart(), function(eventGroup) {
     _.each(eventGroup, function(event) {
       console.log('Calcing (Printing) EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
     });
   });
-
+*/
   console.log('Recalculated Grid Params!');
+  return gridColumns;
 };
 ///
 ///
@@ -284,7 +284,7 @@ MiniCalendar.Calendar.prototype.clearGrid = function() {
 
   console.log('Cleared Grid on el: ' + self.calendarEl);
 };
-MiniCalendar.Calendar.prototype.drawGrid = function() {
+MiniCalendar.Calendar.prototype.drawGrid = function(eventGrid) {
   'use strict';
   var self = this;
   console.log('Drawing Grid on el: ' + self.calendarEl);
@@ -292,15 +292,17 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   var calendarContainer = $(self.calendarEl);
   calendarContainer.html('');
 
-  //var tempcontainer = document.createElement('div');
-  _.each(self.events, function(event){
+  _.each(eventGrid, function(eventRow){
     console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
+    _.each(eventRow, function(event) {
+      var newEventWidget = self.widgetFactory(event);
+      if( event.widthOffset > 0 ) {
+        newEventWidget.style.left = event.widthOffset + '%';
+      }
+      newEventWidget.style.width = event.widthPct + '%';
+      calendarContainer.append(newEventWidget);
 
-    var newEventWidget = self.widgetFactory(event);
-    if( event.column > 0 ) {
-      newEventWidget.style.left = (self.WIDGET_OFFSET_PX * event.column) + 'px';
-    }
-    calendarContainer.append(newEventWidget);
+    });
   });
 
   console.log('Drew Grid on el: ' + self.calendarEl);
