@@ -60,7 +60,7 @@ MiniCalendar.Calendar = function(userOptions) {
     return self.columns;
   };
 
-
+  self.mappedEvents = [];
   self.events = [];
   _.each(self.mergedOptions.events, function(event) {
     self.events.push(new MiniCalendar.Event(event));
@@ -82,7 +82,7 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
 
   var sortedEvents = self.events.sort(self.startSortComparator);
 
-  for(var i = 0; i < sortedEvents.length; i++) {
+  for(var i = 0; i < sortedEvents.length;) {
     var currentBucket = new Array();
 
     var currentEvent = self.events[i];
@@ -97,43 +97,21 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
     for(var k = 0; k < currentBucket.length; k++) {
       currentBucket[k].widthPct = (100 / currentBucket.length);
       currentBucket[k].widthOffset = (100 / currentBucket.length) * k;
+      currentBucket[k].row = columnGroups.length;
+      currentBucket[k].col = k;
+
       console.log('Event Name: \t' + currentBucket[k].name + '\t Width: \t' + currentBucket[k].widthPct + '\t Offset: \t' + currentBucket[k].widthOffset);
     }
 
     columnGroups.push(currentBucket);
+    i += j;
   }
 
   console.log('mapped the columns! hopefully these are partitioned', columnGroups);
 
-  /*
-  var calendarColumns = [];
-  var sortedEvents = self.events.sort(self.startSortComparator);
-
-  var columnGroups = [];
-  var currentColumn;
-  var lastEnd = -100000000000000000000;
-  $.each(sortedEvents, function (index, event) {
-    var start = event.start;
-    var end = event.end;
-    if (!currentColumn || lastEnd > start) {
-      if(columnGroups.length > 0) {
-
-      }
-      currentColumn = new Array();
-      columnGroups.push(currentColumn);
-    }
-    event.column = columnGroups.length - 1;
-    currentColumn.push(event);
-    lastEnd = Math.max(lastEnd, end);
-  });
-  */
-
-
   self.columns = columnGroups.length;
   self.columnGroups = columnGroups;
 
-  //console.log('mapToColumns - after sort/each - self.events', self.events, 'columnGroups', currentColumn);
-  //console.log('column groups: ', columnGroups);
   return columnGroups;
 };
 
@@ -234,27 +212,11 @@ MiniCalendar.Calendar.prototype.calcGrid = function() {
     event.offset = self.calcOffset(event.start);
   });
 
-  // Fix mapToColumns - Currently produces an error with the end time of events. Also make sure the id is fixed
-  // // Once mapped to columns, define css property for positioning based on calculating css offsets based on hours, minutes, seconds
   var gridColumns = self.mapToColumnGroups();
-  //console.log('gridColumns! - ', gridColumns);
-/*
-  _.each(self.eventsByStart(), function(eventGroup) {
-    _.each(eventGroup, function(event) {
-      console.log('Calcing (Printing) EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
-    });
-  });
-*/
+
   console.log('Recalculated Grid Params!');
   return gridColumns;
 };
-///
-///
-//      NEED TO IMPLEMENT A CALCULATE_X_OFFSET AND CALCULATE_X_WIDTH FUNCTION, SO THAT WIDGETS CAN BE A % OF THE CONTAINER SIZE
-//
-//
-//
-
 
 MiniCalendar.Calendar.prototype.calcHeight = function(event) {
   'use strict';
