@@ -13,15 +13,12 @@ MiniCalendar.Calendar = function(userOptions) {
       app: '#calendar-app'
     },
     name: 'Unititled Mini Calendar',
-    widgetWidth: 250,
-    widgetHeight: 40,
     containerHeight: 720,
     containerWidth: 620,
-    containerWidthPadding: 10,
-    containerHeightPadding: 10,
     startTime: 9 * 60,
     endTime: (9 + 12) * 60,
-    events: []
+    events: [],
+    mappedEvents: []
   };
   self.mergedOptions = $.extend({}, self.defaultOptions, userOptions);
 
@@ -33,35 +30,12 @@ MiniCalendar.Calendar = function(userOptions) {
   self.startTime = self.mergedOptions.startTime;
   self.endTime = self.mergedOptions.endTime;
 
-  self.CONTAINER_HEIGHT_PADDING_PX = self.mergedOptions.containerHeight;
-  self.CONTAINER_WIDTH_PADDING_PX = self.mergedOptions.containerWidth;
-  self.CONTAINER_HEIGHT_PX = self.mergedOptions.containerHeight;
-  self.MINUTE_HEIGHT = parseFloat(self.CONTAINER_HEIGHT_PX) / parseFloat(self.endTime - self.startTime);
-
   self.currentEventId = self.mergedOptions.events.length + 1;
   self.nextEventId = function() { return self.currentEventId++; };
 
-  self.HOUR_HEIGHT = self.MINUTE_HEIGHT * 60;
-  self.DAY_HEIGHT = self.MINUTE_HEIGHT * 60 * 24;
-  self.CONTAINER_PADDING_PX = 3;
-
-  self.MARKER_HEIGHT_PX = self.MINUTE_HEIGHT * 16;
-  self.MARKER_WIDTH_PX = self.MINUTE_HEIGHT * 30;
-  self.MARKER_OFFSET_PX = 0; //self.MINUTE_HEIGHT * self.MARKER_HEIGHT_PX;
-
-  self.WIDGET_WIDTH_PX = self.mergedOptions.widgetWidth;
-  self.WIDGET_MARGIN_PX = 4;
-  self.WIDGET_HORZ_SPACING_PX = 2;
-  self.WIDGET_BORDER_PX = 1;
-  self.WIDGET_OFFSET_PX = self.WIDGET_WIDTH_PX + (self.WIDGET_BORDER_PX * 2);
-
   self.mappedEvents = [];
-  self.events = [];
-  _.each(self.mergedOptions.events, function(event) {
-    self.events.push(new MiniCalendar.Event(event));
-  });
+  self.events = self.defaultOptions.events.concat(userOptions.events);
 
-  self.drawMarkers();
   self.refreshCalendar();
   console.log(self.name + ' initialized!');
 };
@@ -79,14 +53,14 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
   var self = this;
   //console.log('mapToColumns - current Columns', self.events);
 
-  var columnGroups = new Array();
+  var columnGroups = [];
   var currentColumn;
   var lastEnd = -100000000000000000000;
 
   var sortedEvents = self.events.sort(self.startSortComparator);
 
   for(var i = 0; i < sortedEvents.length;) {
-    var currentBucket = new Array();
+    var currentBucket = [];
 
     var currentEvent = self.events[i];
     currentBucket.push(currentEvent);
@@ -206,12 +180,12 @@ MiniCalendar.Calendar.prototype.calcGrid = function() {
 MiniCalendar.Calendar.prototype.calcHeight = function(event) {
   'use strict';
   var self = this;
-  return (event.end - event.start) * self.MINUTE_HEIGHT;
+  return parseInt(event.end - event.start);
 };
 MiniCalendar.Calendar.prototype.calcOffset = function(minutesPastNine) {
   'use strict';
   var self = this;
-  return parseFloat(minutesPastNine) * self.MINUTE_HEIGHT;
+  return parseInt(minutesPastNine);
 };
 MiniCalendar.Calendar.prototype.calcDisplayTime = function(minutesPastNine) {
   'use strict';
@@ -240,8 +214,8 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   calendarContainer.html('');
 
   _.each(self.mappedEvents, function(eventRow){
-    console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
     _.each(eventRow, function(event) {
+      console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
       var newEventWidget = self.widgetFactory(event);
       if( event.widthOffset > 0 ) {
         newEventWidget.style.left = event.widthOffset + '%';
@@ -321,18 +295,17 @@ MiniCalendar.Calendar.prototype.drawMarkers = function() {
   for(var i = self.startTime; i < self.endTime; i = i + 60) {
     var currentHour = i / 60;
 
-    var minutesAfterStartTime = i - self.startTime;
-    var currentMarkerOffsetPx = minutesAfterStartTime * self.MINUTE_HEIGHT;
+    var minutesAfterStartTime = parseInt(i - self.startTime);
 
     var majorMarker = self.majorMarkerFactory(currentHour);
-    if(currentMarkerOffsetPx === 0) {
+    if(minutesAfterStartTime === 0) {
       majorMarker.style.top = 'auto';
     } else {
-      majorMarker.style.top = currentMarkerOffsetPx + 'px';
+      majorMarker.style.top = minutesAfterStartTime + 'px';
     }
 
     var minorMarker = self.minorMarkerFactory(currentHour);
-    minorMarker.style.top = (currentMarkerOffsetPx + 30) + 'px';
+    minorMarker.style.top = (minutesAfterStartTime + 30) + 'px';
 
     markersContainer.append(majorMarker);
     markersContainer.append(minorMarker);
