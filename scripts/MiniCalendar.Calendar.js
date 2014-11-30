@@ -23,11 +23,14 @@ MiniCalendar.Calendar = function(userOptions) {
   };
   self.mergedOptions = $.extend({}, self.defaultOptions, userOptions);
 
+
+  // Initialize user-defined events that are passed in JSON as MiniCalendar.Event objects
   self.mappedEvents = [];
   self.events = self.defaultOptions.events.concat(
     _.map(userOptions.events, function(jsonEvent) {
       return new MiniCalendar.Event(jsonEvent);
-  }));
+    })
+  );
 
   self.containerEl = self.mergedOptions.els.container;
   self.calendarEl = self.mergedOptions.els.calendar;
