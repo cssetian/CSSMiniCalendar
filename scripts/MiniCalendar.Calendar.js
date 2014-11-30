@@ -4,6 +4,7 @@ MiniCalendar.Calendar = function(userOptions) {
   'use strict';
   var self = this;
   console.log('Initializing Calendar!');
+  self.drawMarkers();
 
   self.defaultOptions = {
     els: {
@@ -22,6 +23,12 @@ MiniCalendar.Calendar = function(userOptions) {
   };
   self.mergedOptions = $.extend({}, self.defaultOptions, userOptions);
 
+  self.mappedEvents = [];
+  self.events = self.defaultOptions.events.concat(
+    _.map(userOptions.events, function(jsonEvent) {
+      return new MiniCalendar.Event(jsonEvent);
+  }));
+
   self.containerEl = self.mergedOptions.els.container;
   self.calendarEl = self.mergedOptions.els.calendar;
   self.markersEl = self.mergedOptions.els.markers;
@@ -33,8 +40,6 @@ MiniCalendar.Calendar = function(userOptions) {
   self.currentEventId = self.mergedOptions.events.length + 1;
   self.nextEventId = function() { return self.currentEventId++; };
 
-  self.mappedEvents = [];
-  self.events = self.defaultOptions.events.concat(userOptions.events);
 
   self.refreshCalendar();
   console.log(self.name + ' initialized!');
