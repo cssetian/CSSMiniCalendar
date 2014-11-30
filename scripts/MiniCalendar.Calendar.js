@@ -74,7 +74,39 @@ MiniCalendar.Calendar = function(userOptions) {
 MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
   'use strict';
   var self = this;
-  console.log('mapToColumns - current Columns', self.events);
+  //console.log('mapToColumns - current Columns', self.events);
+
+  var columnGroups = new Array();
+  var currentColumn;
+  var lastEnd = -100000000000000000000;
+
+  var sortedEvents = self.events.sort(self.startSortComparator);
+
+  for(var i = 0; i < sortedEvents.length; i++) {
+    var currentBucket = new Array();
+
+    var currentEvent = self.events[i];
+    currentBucket.push(currentEvent);
+
+    var j = 1;
+    while((i + j) < sortedEvents.length && self.events[i + j].start < currentEvent.end) {
+      currentBucket.push(self.events[i + j]);
+      j++;
+    }
+
+    for(var k = 0; k < currentBucket.length; k++) {
+      currentBucket[k].widthPct = (100 / currentBucket.length);
+      currentBucket[k].widthOffset = (100 / currentBucket.length) * k;
+      console.log('Event Name: \t' + currentBucket[k].name + '\t Width: \t' + currentBucket[k].widthPct + '\t Offset: \t' + currentBucket[k].widthOffset);
+    }
+
+    columnGroups.push(currentBucket);
+
+  }
+
+  console.log('mapped the columns! hopefully these are partitioned', columnGroups);
+
+  /*
   var calendarColumns = [];
   var sortedEvents = self.events.sort(self.startSortComparator);
 
@@ -95,12 +127,14 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
     currentColumn.push(event);
     lastEnd = Math.max(lastEnd, end);
   });
+  */
+
 
   self.columns = columnGroups.length;
   self.columnGroups = columnGroups;
 
-  console.log('mapToColumns - after sort/each - self.events', self.events, 'columnGroups', currentColumn);
-  console.log('column groups: ', columnGroups);
+  //console.log('mapToColumns - after sort/each - self.events', self.events, 'columnGroups', currentColumn);
+  //console.log('column groups: ', columnGroups);
   return columnGroups;
 };
 

@@ -11,4 +11,5 @@ MiniCalendar.Event = function(options) {
   self.height = '';
   self.offset = '';
   self.column = '';
+  self.widthPct = '';
 };
