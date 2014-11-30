@@ -163,6 +163,29 @@ MiniCalendar.Calendar.prototype.removeEventByEl = function(mouseEvent) {
   console.log('Removing event by "x" el by removing event ' + eventIDToRemove + 'from list.');
   self.removeEventById(eventIDToRemove);
 };
+MiniCalendar.Calendar.prototype.drawGrid = function() {
+  'use strict';
+  var self = this;
+  console.log('Drawing Grid on el: ' + self.calendarEl);
+  
+  var calendarContainer = $(self.calendarEl);
+  calendarContainer.html('');
+
+  _.each(self.mappedEvents, function(eventRow){
+    _.each(eventRow, function(event) {
+      console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
+      var newEventWidget = self.widgetFactory(event);
+      if( event.widthOffset > 0 ) {
+        newEventWidget.style.left = event.widthOffset + '%';
+      }
+      newEventWidget.style.width = event.widthPct + '%';
+      calendarContainer.append(newEventWidget);
+
+    });
+  });
+
+  console.log('Drew Grid on el: ' + self.calendarEl);
+};
 MiniCalendar.Calendar.prototype.calcGrid = function() {
   'use strict';
   var self = this;
@@ -204,29 +227,6 @@ MiniCalendar.Calendar.prototype.clearGrid = function() {
   }
 
   console.log('Cleared Grid on el: ' + self.calendarEl);
-};
-MiniCalendar.Calendar.prototype.drawGrid = function() {
-  'use strict';
-  var self = this;
-  console.log('Drawing Grid on el: ' + self.calendarEl);
-  
-  var calendarContainer = $(self.calendarEl);
-  calendarContainer.html('');
-
-  _.each(self.mappedEvents, function(eventRow){
-    _.each(eventRow, function(event) {
-      console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
-      var newEventWidget = self.widgetFactory(event);
-      if( event.widthOffset > 0 ) {
-        newEventWidget.style.left = event.widthOffset + '%';
-      }
-      newEventWidget.style.width = event.widthPct + '%';
-      calendarContainer.append(newEventWidget);
-
-    });
-  });
-
-  console.log('Drew Grid on el: ' + self.calendarEl);
 };
 MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
   'use strict';
