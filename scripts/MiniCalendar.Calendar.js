@@ -160,8 +160,8 @@ MiniCalendar.Calendar.prototype.addEvent = function(newEvent) {
   }
 
   self.events.push(newEvent);
-  self.calcGrid();
-  self.drawGrid();
+  var mappedCols = self.calcGrid();
+  self.drawGrid(mappedCols);
   console.log('Event added!');
 };
 MiniCalendar.Calendar.prototype.removeEvent = function(rmEvent) {
@@ -184,8 +184,8 @@ MiniCalendar.Calendar.prototype.removeEvent = function(rmEvent) {
   console.log('Current Events List after remove: ');
   console.log(self.events);
 
-  self.calcGrid();
-  self.drawGrid();
+  var mappedCols = self.calcGrid();
+  self.drawGrid(mappedCols);
   console.log('Event removed!');
 };
 MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
@@ -212,8 +212,8 @@ MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
   console.log('Events List after remove by ID: ');
   console.log(self.events);
 
-  self.calcGrid();
-  self.drawGrid();
+  var mappedCols = self.calcGrid();
+  self.drawGrid(mappedCols);
   console.log('Event ' + rmId + ' removed by ID!');
 };
 MiniCalendar.Calendar.prototype.removeEventByEl = function(mouseEvent) {
