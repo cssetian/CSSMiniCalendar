@@ -30,7 +30,6 @@ MiniCalendar.Calendar = function(userOptions) {
   self.markersEl = self.mergedOptions.els.markers;
 
   self.name = self.mergedOptions.name;
-  self.columns = 1;
   self.startTime = self.mergedOptions.startTime;
   self.endTime = self.mergedOptions.endTime;
 
@@ -56,19 +55,23 @@ MiniCalendar.Calendar = function(userOptions) {
   self.WIDGET_BORDER_PX = 1;
   self.WIDGET_OFFSET_PX = self.WIDGET_WIDTH_PX + (self.WIDGET_BORDER_PX * 2);
 
-  self.CALC_COLUMN_WIDTH = function() {
-    return self.columns;
-  };
-
   self.mappedEvents = [];
   self.events = [];
   _.each(self.mergedOptions.events, function(event) {
     self.events.push(new MiniCalendar.Event(event));
   });
+
   self.drawMarkers();
-  var mappedCols = self.calcGrid();
-  self.drawGrid(mappedCols);
+  self.refreshCalendar();
   console.log(self.name + ' initialized!');
+};
+
+MiniCalendar.Calendar.prototype.refreshCalendar = function() {
+  'use strict';
+  var self = this;
+
+  self.calcGrid();
+  self.drawGrid();
 };
 
 MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
@@ -94,25 +97,19 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
       j++;
     }
 
+    // Add the row, column, 
     for(var k = 0; k < currentBucket.length; k++) {
-      currentBucket[k].widthPct = (100 / currentBucket.length);
-      currentBucket[k].widthOffset = (100 / currentBucket.length) * k;
       currentBucket[k].row = columnGroups.length;
       currentBucket[k].col = k;
-
-      console.log('Event Name: \t' + currentBucket[k].name + '\t Width: \t' + currentBucket[k].widthPct + '\t Offset: \t' + currentBucket[k].widthOffset);
+      currentBucket[k].widthPct = (100 / currentBucket.length);
+      currentBucket[k].widthOffset = (100 / currentBucket.length) * k;
     }
 
     columnGroups.push(currentBucket);
     i += j;
   }
 
-  console.log('mapped the columns! hopefully these are partitioned', columnGroups);
-
-  self.columns = columnGroups.length;
-  self.columnGroups = columnGroups;
-
-  return columnGroups;
+  self.mappedEvents = columnGroups;
 };
 
 MiniCalendar.Calendar.prototype.startSortComparator = function(firstEvent, secondEvent) {
@@ -138,8 +135,7 @@ MiniCalendar.Calendar.prototype.addEvent = function(newEvent) {
   }
 
   self.events.push(newEvent);
-  var mappedCols = self.calcGrid();
-  self.drawGrid(mappedCols);
+  self.refreshCalendar();
   console.log('Event added!');
 };
 MiniCalendar.Calendar.prototype.removeEvent = function(rmEvent) {
@@ -159,11 +155,8 @@ MiniCalendar.Calendar.prototype.removeEvent = function(rmEvent) {
     console.log('ERROR: Event not found to remove!');
     return;
   }
-  console.log('Current Events List after remove: ');
-  console.log(self.events);
 
-  var mappedCols = self.calcGrid();
-  self.drawGrid(mappedCols);
+  self.refreshCalendar();
   console.log('Event removed!');
 };
 MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
@@ -174,8 +167,6 @@ MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
   console.log('Removing event by ID with ID of ' + rmId);
   console.log('Event to be removed: ');
   console.log(rmId);
-  console.log('Current Events List: ');
-  console.log(self.events);
 
   var idList = _.pluck(self.events, 'id');
 
@@ -187,11 +178,7 @@ MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
     console.log('ERROR: Event was not found in events list!');
   }
 
-  console.log('Events List after remove by ID: ');
-  console.log(self.events);
-
-  var mappedCols = self.calcGrid();
-  self.drawGrid(mappedCols);
+  self.refreshCalendar();
   console.log('Event ' + rmId + ' removed by ID!');
 };
 MiniCalendar.Calendar.prototype.removeEventByEl = function(mouseEvent) {
@@ -212,10 +199,8 @@ MiniCalendar.Calendar.prototype.calcGrid = function() {
     event.offset = self.calcOffset(event.start);
   });
 
-  var gridColumns = self.mapToColumnGroups();
-
+  self.mapToColumnGroups();
   console.log('Recalculated Grid Params!');
-  return gridColumns;
 };
 
 MiniCalendar.Calendar.prototype.calcHeight = function(event) {
@@ -246,7 +231,7 @@ MiniCalendar.Calendar.prototype.clearGrid = function() {
 
   console.log('Cleared Grid on el: ' + self.calendarEl);
 };
-MiniCalendar.Calendar.prototype.drawGrid = function(eventGrid) {
+MiniCalendar.Calendar.prototype.drawGrid = function() {
   'use strict';
   var self = this;
   console.log('Drawing Grid on el: ' + self.calendarEl);
@@ -254,7 +239,7 @@ MiniCalendar.Calendar.prototype.drawGrid = function(eventGrid) {
   var calendarContainer = $(self.calendarEl);
   calendarContainer.html('');
 
-  _.each(eventGrid, function(eventRow){
+  _.each(self.mappedEvents, function(eventRow){
     console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
     _.each(eventRow, function(event) {
       var newEventWidget = self.widgetFactory(event);
