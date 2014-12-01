@@ -52,6 +52,7 @@ MiniCalendar.Calendar.prototype.refreshCalendar = function() {
   'use strict';
   var self = this;
 
+  self.drawMarkers();
   self.calcGrid();
   self.drawGrid();
 };
@@ -295,6 +296,7 @@ MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
 MiniCalendar.Calendar.prototype.drawMarkers = function() {
   'use strict';
   var self = this;
+  console.log('Drawing Markers!');
 
   var markersContainer = $(self.markersEl);
   var startHour = (self.startTime)/60;
