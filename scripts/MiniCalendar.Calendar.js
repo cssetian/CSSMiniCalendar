@@ -14,7 +14,7 @@ MiniCalendar.Calendar = function(userOptions) {
       markers: '#container-markers',
       app: '#calendar-app'
     },
-    name: 'Unititled Mini Calendar',
+    name: 'Sample Mini Calendar',
     containerHeight: 720,
     containerWidth: 620,
     startTime: 9 * 60,
@@ -24,7 +24,7 @@ MiniCalendar.Calendar = function(userOptions) {
       { start: 180, end: 240 },
       { start: 100, end: 180 },
       { start: 60, end: 120 },
-      { start: 200, end: 300, name: 'Wacky Event' }
+      { start: 200, end: 300 }
     ]
   };
   self.mergedOptions = $.extend(true, self.defaultOptions, userOptions);
@@ -289,6 +289,11 @@ MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
   var textEventName = document.createTextNode(event.name);
   divEventName.appendChild(textEventName);
 
+  var divEventLocation = document.createElement('div');
+  divEventLocation.classList.add('event-location');
+  var textEventLocation = document.createTextNode(event.location);
+  divEventLocation.appendChild(textEventLocation);
+
   // Create Event Start Div
   var divEventStart = document.createElement('div');
   divEventStart.classList.add('event-start');
@@ -329,6 +334,7 @@ MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
 
   // Append All Individual Elements To Event Container
   divEventContainer.appendChild(divEventName);
+  divEventContainer.appendChild(divEventLocation);
   divEventContainer.appendChild(divEventTimeContainer);
   divEventContainer.appendChild(divRemoveEventButton);
 

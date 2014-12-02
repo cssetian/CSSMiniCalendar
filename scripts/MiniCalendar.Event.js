@@ -5,7 +5,8 @@ MiniCalendar.Event = function(options) {
   var self = this;
 
   self.id = options.id || -1;
-  self.name = options.name || 'Untitled Event';
+  self.name = options.name || 'Sample Item';
+  self.location = options.location || 'Sample Location';
   self.start = options.start || 0;
   self.end = options.end || 0;
   self.height = '';

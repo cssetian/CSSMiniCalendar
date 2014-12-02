@@ -1,11 +1,12 @@
 /* Text Styling */
 body { font-size: 62.5%; }
-.event-container .event-time-container, .marker-container { font-size: 0.6rem; }
 .event-container .event-name { font-size: 0.7rem; }
+.event-container  .marker-container, .event-location { font-size: 0.6rem; }
+.event-time-container { font-size: 0.5rem; }
 .event-container .remove-event { font-size: 0.4rem; }
 
 body { font-family: sans-serif; }
-.marker-container, .event-time-container, .event-name { text-align: center; }
+.marker-container, .event-time-container, .event-name, .event-location { text-align: center; }
 #calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers { vertical-align: top; }
 
 /* Display and Position */
@@ -28,6 +29,7 @@ body { font-family: sans-serif; }
 #calendar-events-wrapper { padding: 0 10px; }
 #calendar-markers-wrapper { padding: 0 5px; }
 .marker-major .time { padding-right: 4px; }
+.event-name, .event-location { padding-bottom: 2px; }
 
 /* Borders and Backgrounds */
 .event-container {
