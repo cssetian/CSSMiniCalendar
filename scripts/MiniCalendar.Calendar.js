@@ -65,7 +65,7 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
   var currentColumn;
   var lastEnd = -100000000000000000000;
 
-  var sortedEvents = self.events.sort(self.startSortComparator);
+  var sortedEvents = self.events.sort(MiniCalendar.Calendar.startSortComparator);
 
   for(var i = 0; i < sortedEvents.length;) {
     var currentBucket = [];
@@ -94,7 +94,7 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
   self.mappedEvents = columnGroups;
 };
 
-MiniCalendar.Calendar.prototype.startSortComparator = function(firstEvent, secondEvent) {
+MiniCalendar.Calendar.startSortComparator = function(firstEvent, secondEvent) {
   var startDifference = firstEvent.start - secondEvent.start;
   if(startDifference) {
     return startDifference;
