@@ -26,6 +26,7 @@ MiniCalendar.App = function() {
     // Instantiate new Calendar object and initialize
     self.cal = new MiniCalendar.Calendar(self.calOptions);
 
+    // Group all the els together responsible for various parts of page navigation
     self.appEls = {
       name: options.els.eventName,
       start: options.els.eventStart,
@@ -55,7 +56,7 @@ MiniCalendar.App = function() {
           end: $(self.appEls.end).val()
         };
         self.cal.addEvent(newEventJSON);
-        
+
         $(self.appEls.remove).on('click', self.onRemove);
       } else {
         console.log('Please fill out all fields to create a new event!');

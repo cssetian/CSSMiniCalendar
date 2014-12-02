@@ -25,7 +25,8 @@
 <script src="scripts/MiniCalendar.Event.js" type="text/javascript"></script>
 <script src="scripts/MiniCalendar.Calendar.js" type="text/javascript"></script>
 <script src="scripts/MiniCalendar.App.js" type="text/javascript"></script>
-<script>
+<script>       
+
 
   // Function to be called from the console to run the app
   // Call with json-formatted array of events to use custom events
@@ -34,11 +35,8 @@
   //      start: Start time of event
   //      end: End time of event
   //      (note: all times are in units of minutes after 9:00AM)
-  var layOutDay;            
-
-  $(document).ready(function(){
-    var app = {};
-
+  // Defines the function exposed publicly if you just open the index.html file
+  function layOutDay(userEvents) {  
     // Demo app can be used with other HTML class/id structures
     var appDefaultOptions = {
       els: {                            
@@ -55,16 +53,12 @@
       name: 'Mini-Calendar'
     };
 
-    // Defines the function exposed publicly if you just open the index.html file
-    layOutDay = function(userEvents) {  
-      // If use does supply array of events in json as a parameter, use those as the data for the App
-      if(userEvents) { appDefaultOptions.events = userEvents; }
-          
-      // Create and initialize a new app
-      app = new MiniCalendar.App();
-      app.init(appDefaultOptions);
-    };
-  });
-
+    // If use does supply array of events in json as a parameter, use those as the data for the App
+    if(userEvents) { appDefaultOptions.events = userEvents; }
+        
+    // Create and initialize a new app
+    app = new MiniCalendar.App();
+    app.init(appDefaultOptions);
+  };
 </script>
 </html>

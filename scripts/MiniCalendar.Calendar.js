@@ -45,6 +45,7 @@ MiniCalendar.Calendar = function(userOptions) {
     return new MiniCalendar.Event(jsonEvent);
   });
 
+  self.clearGrid();
   self.drawMarkers();
   self.drawEventsContainer();
 
@@ -110,19 +111,18 @@ MiniCalendar.Calendar.prototype.addEvent = function(newEventJSON) {
   'use strict';
   var self = this;
   console.log('Adding event to MiniCalendar!');
+  var doesEventExist = _.findWhere(self.events, { name: newEventJSON.name, start: newEventJSON.start, end: newEventJSON.end });
 
-  newEventJSON.id = self.nextEventId();
-  var newEvent = new MiniCalendar.Event(newEventJSON);
-
-  var doesEventExist = _.findWhere(self.events, { name: newEvent.name, start: newEvent.start, end: newEvent.end });
   if(doesEventExist !== undefined) {
     console.log('Event already present in events list!');
-    return;
-  }
+  } else {
+    newEventJSON.id = self.nextEventId();
+    var newEvent = new MiniCalendar.Event(newEventJSON);
 
-  self.events.push(newEvent);
-  self.refreshCalendar();
-  console.log('Event added!');
+    self.events.push(newEvent);
+    self.refreshCalendar();
+    console.log('Event added!');
+  }
 };
 // Removes an event from the calendar, given the event's id
 MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
@@ -180,22 +180,20 @@ MiniCalendar.Calendar.prototype.calcEventHeight = function(event) {
 MiniCalendar.Calendar.prototype.calcDisplayTime = function(minutesPastStart) {
   'use strict';
   var self = this;
-  var hours = ((parseInt(minutesPastStart) + self.calendarStartTime)/60) > 9 ? parseInt((minutesPastStart + self.calendarStartTime)/60) : '0' + parseInt((minutesPastStart + self.calendarStartTime)/60);
+  var numericHour = parseInt((parseInt(minutesPastStart) + parseInt(self.calendarStartTime))/60);
   var minutes = minutesPastStart%60 > 9 ? minutesPastStart%60 : '0' + minutesPastStart%60;
-  return hours + ':' + minutes;
+  return numericHour + ':' + minutes;
 };
 // Clear the events grid of all events
 MiniCalendar.Calendar.prototype.clearGrid = function() {
   'use strict';
   var self = this;
-  console.log('Clearing Grid on el: ' + self.els.calendar);
+  console.log('Clearing App El');
 
-  var myNode = document.getElementById(self.els.calendar);
-  while (myNode.firstChild) {
-    myNode.removeChild(myNode.firstChild);
+  var myAppNode = document.getElementById(self.els.app);
+  while (myAppNode && myAppNode.hasChildren && myAppNode.firstChild) {
+    myAppNode.removeChild(myAppNode.firstChild);
   }
-
-  console.log('Cleared Grid on el: ' + self.els.calendar);
 };
 // Initialize the markers on the app element
 MiniCalendar.Calendar.prototype.drawMarkers = function() {

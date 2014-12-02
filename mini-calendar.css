@@ -1,4 +1,4 @@
-/* TEXT STYLING */
+/* Text Styling */
 body { font-size: 62.5%; }
 .event-container .event-time-container, .marker-container { font-size: 0.6rem; }
 .event-container .event-name { font-size: 0.7rem; }
@@ -8,14 +8,14 @@ body { font-family: sans-serif; }
 .marker-container, .event-time-container, .event-name { text-align: center; }
 #calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers { vertical-align: top; }
 
-/* DISPLAY AND POSITION */
+/* Display and Position */
 #calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper { vertical-align: top; }
 .event-start, .event-end, .remove-event, #calendar-events-wrapper, #calendar-markers-wrapper { display: inline-block; }
 #calendar-markers-wrapper { position: static; }
 #calendar-events, #calendar-markers, #calendar-markers-wrapper, #calendar-events-wrapper { position: relative; }
 .event-container, .marker-container, .remove-event { position: absolute; box-sizing: border-box; }
 
-/* MARGIN AND PADDING */
+/* Margins and Padding */
 #calendar-app { margin: 10px; }
 .module {  margin: 10px 0; }
 .remove-event {
@@ -29,7 +29,7 @@ body { font-family: sans-serif; }
 #calendar-markers-wrapper { padding: 0 5px; }
 .marker-major .time { padding-right: 4px; }
 
-/* BORDERS & BACKGROUNDS */
+/* Borders and Backgrounds */
 .event-container {
   border-width: 1px;  
   border-left-width: 5px;
@@ -58,7 +58,7 @@ body { font-family: sans-serif; }
           rgba(0,94,149,0) 60px);
 }
 
-/* HEIGHT AND WIDTH  */
+/* Height and Width  */
 #calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers, #calendar-app {
   height: 720px;
 }
