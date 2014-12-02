@@ -62,6 +62,9 @@ body { font-family: sans-serif; }
 #calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers, .calendar-app {
   height: 720px;
 }
+.calendar-app {
+  width: 700px;
+}
 #calendar-events-wrapper, #calendar-events {
   width: 620px;
 }
