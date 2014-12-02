@@ -6,17 +6,17 @@ body { font-size: 62.5%; }
 
 body { font-family: sans-serif; }
 .marker-container, .event-time-container, .event-name { text-align: center; }
-.calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers { vertical-align: top; }
+#calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers { vertical-align: top; }
 
 /* DISPLAY AND POSITION */
-.calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper { vertical-align: top; }
+#calendar-app, #calendar-events-wrapper, #calendar-markers-wrapper { vertical-align: top; }
 .event-start, .event-end, .remove-event, #calendar-events-wrapper, #calendar-markers-wrapper { display: inline-block; }
 #calendar-markers-wrapper { position: static; }
 #calendar-events, #calendar-markers, #calendar-markers-wrapper, #calendar-events-wrapper { position: relative; }
 .event-container, .marker-container, .remove-event { position: absolute; box-sizing: border-box; }
 
 /* MARGIN AND PADDING */
-.calendar-app { margin: 10px; }
+#calendar-app { margin: 10px; }
 .module {  margin: 10px 0; }
 .remove-event {
   padding: 5px;
@@ -27,14 +27,14 @@ body { font-family: sans-serif; }
 .event-container, .marker-container { padding: 2px; }
 #calendar-events-wrapper { padding: 0 10px; }
 #calendar-markers-wrapper { padding: 0 5px; }
-.major-marker .time { padding-right: 4px; }
+.marker-major .time { padding-right: 4px; }
 
 /* BORDERS & BACKGROUNDS */
 .event-container {
   border-width: 1px;  
   border-left-width: 5px;
   border-style: solid;
-  border-color: #005e95;
+  border-color: rgb(0,94,149);
   background-color: #FFFFFF; 
 }
 #calendar-events-wrapper {
@@ -52,17 +52,17 @@ body { font-family: sans-serif; }
           rgba(211,211,211,0) 5px, 
           rgba(211,211,211,0) 10px),
         -webkit-linear-gradient(top, 
-          rgba(0,128,0,1) 0px, 
-          rgba(0,128,0,1) 1px, 
-          rgba(0,128,0,0) 1px, 
-          rgba(0,128,0,0) 60px);
+          rgba(0,94,149,1) 0px, 
+          rgba(0,94,149,1) 1px, 
+          rgba(0,94,149,0) 1px, 
+          rgba(0,94,149,0) 60px);
 }
 
 /* HEIGHT AND WIDTH  */
-#calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers, .calendar-app {
+#calendar-events-wrapper, #calendar-markers-wrapper, #calendar-events, #calendar-markers, #calendar-app {
   height: 720px;
 }
-.calendar-app {
+#calendar-app {
   width: 700px;
 }
 #calendar-events-wrapper, #calendar-events {

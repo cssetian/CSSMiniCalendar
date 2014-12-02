@@ -1,15 +1,16 @@
 var MiniCalendar = MiniCalendar || {};
 
+// Day-Planning Calendar app that manages a calendar with 
+//      a collection of events that are rendered in a grid
+//      without overlapping
 MiniCalendar.Calendar = function(userOptions) {
   'use strict';
   var self = this;
   console.log('Initializing Calendar!');
-  self.drawMarkers();
 
   self.defaultOptions = {
     els: {
-      container: '#calendar-container-wrapper',
-      calendar: '#container-calendar',
+      calendar: '#calendar-events',
       markers: '#container-markers',
       app: '#calendar-app'
     },
@@ -18,53 +19,53 @@ MiniCalendar.Calendar = function(userOptions) {
     containerWidth: 620,
     startTime: 9 * 60,
     endTime: (9 + 12) * 60,
-    events: [],
-    mappedEvents: []
+    jsonEvents: [
+      { start: 0, end: 60 },
+      { start: 180, end: 240 },
+      { start: 100, end: 180 },
+      { start: 60, end: 120 },
+      { start: 200, end: 300, name: 'Wacky Event' }
+    ]
   };
-  self.mergedOptions = $.extend({}, self.defaultOptions, userOptions);
+  self.mergedOptions = $.extend(true, self.defaultOptions, userOptions);
+
+  self.els = self.mergedOptions.els;
+
+  self.currentEventId = 0;
+  self.nextEventId = function() { return self.currentEventId++; };
+
+  self.name = self.mergedOptions.name;
+  self.calendarStartTime = parseInt(self.mergedOptions.startTime);
+  self.calendarEndTime = parseInt(self.mergedOptions.endTime);
 
   // Initialize user-defined events that are passed in JSON as MiniCalendar.Event objects
   self.mappedEvents = [];
-  self.events = self.defaultOptions.events.concat(
-    _.map(userOptions.events, function(jsonEvent) {
-      return new MiniCalendar.Event(jsonEvent);
-    })
-  );
+  self.events = _.map(self.defaultOptions.jsonEvents, function(jsonEvent) {
+    jsonEvent.id = self.nextEventId();
+    return new MiniCalendar.Event(jsonEvent);
+  });
 
-  self.containerEl = self.mergedOptions.els.container;
-  self.calendarEl = self.mergedOptions.els.calendar;
-  self.markersEl = self.mergedOptions.els.markers;
-
-  self.name = self.mergedOptions.name;
-  self.startTime = self.mergedOptions.startTime;
-  self.endTime = self.mergedOptions.endTime;
-
-  self.currentEventId = self.mergedOptions.events.length + 1;
-  self.nextEventId = function() { return self.currentEventId++; };
-
+  self.drawMarkers();
+  self.drawEventsContainer();
 
   self.refreshCalendar();
   console.log(self.name + ' initialized!');
 };
-
+// Recalculates and draws the calendar
 MiniCalendar.Calendar.prototype.refreshCalendar = function() {
   'use strict';
   var self = this;
-
-  self.drawMarkers();
   self.calcGrid();
   self.drawGrid();
 };
-
+// Maps an array of events to an array of column groups, representing overlapping events
 MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
   'use strict';
   var self = this;
-  //console.log('mapToColumns - current Columns', self.events);
 
   var columnGroups = [];
   var currentColumn;
   var lastEnd = -100000000000000000000;
-
   var sortedEvents = self.events.sort(MiniCalendar.Calendar.startSortComparator);
 
   for(var i = 0; i < sortedEvents.length;) {
@@ -79,7 +80,7 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
       j++;
     }
 
-    // Add the row, column, 
+    // Add the row, column, width in percentage of the col, and offset denoting which col it resides in
     for(var k = 0; k < currentBucket.length; k++) {
       currentBucket[k].row = columnGroups.length;
       currentBucket[k].col = k;
@@ -93,8 +94,9 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
 
   self.mappedEvents = columnGroups;
 };
-
+// Comparator for sorting an array of events - First by start time, then by end time
 MiniCalendar.Calendar.startSortComparator = function(firstEvent, secondEvent) {
+  'use strict';
   var startDifference = firstEvent.start - secondEvent.start;
   if(startDifference) {
     return startDifference;
@@ -103,14 +105,16 @@ MiniCalendar.Calendar.startSortComparator = function(firstEvent, secondEvent) {
     return endDifference;
   }
 };
-
-MiniCalendar.Calendar.prototype.addEvent = function(newEvent) {
+// Adds an event to the calendar given an event name, start time, and end time in a JSON object
+MiniCalendar.Calendar.prototype.addEvent = function(newEventJSON) {
   'use strict';
   var self = this;
   console.log('Adding event to MiniCalendar!');
-  newEvent.id = self.nextEventId();
 
-  var doesEventExist = _.findWhere(self.events, { name: newEvent.name, start: newEvent.start, end: newEvent.end, id: newEvent.id });
+  newEventJSON.id = self.nextEventId();
+  var newEvent = new MiniCalendar.Event(newEventJSON);
+
+  var doesEventExist = _.findWhere(self.events, { name: newEvent.name, start: newEvent.start, end: newEvent.end });
   if(doesEventExist !== undefined) {
     console.log('Event already present in events list!');
     return;
@@ -120,27 +124,7 @@ MiniCalendar.Calendar.prototype.addEvent = function(newEvent) {
   self.refreshCalendar();
   console.log('Event added!');
 };
-MiniCalendar.Calendar.prototype.removeEvent = function(rmEvent) {
-  'use strict';
-  var self = this;
-  console.log('Removing event from MiniCalendar!');
-  console.log('Event to be removed: ');
-  console.log(rmEvent);
-  console.log('Current Events List: ');
-  console.log(self.events);
-
-  var objObjComparator = function(event) { return (event.id === rmEvent.id); };
-
-  if(!_.contains(self.events, rmEvent)) {
-    self.events = _.reject(self.events, objObjComparator);
-  } else {
-    console.log('ERROR: Event not found to remove!');
-    return;
-  }
-
-  self.refreshCalendar();
-  console.log('Event removed!');
-};
+// Removes an event from the calendar, given the event's id
 MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
   'use strict';
   var self = this;
@@ -163,6 +147,7 @@ MiniCalendar.Calendar.prototype.removeEventById = function(rmId) {
   self.refreshCalendar();
   console.log('Event ' + rmId + ' removed by ID!');
 };
+// Removes an event from the calendar, given a mouseEvent El (i.e. user clicked 'remove event' button)
 MiniCalendar.Calendar.prototype.removeEventByEl = function(mouseEvent) {
   'use strict';
   var self = this;
@@ -171,82 +156,114 @@ MiniCalendar.Calendar.prototype.removeEventByEl = function(mouseEvent) {
   console.log('Removing event by "x" el by removing event ' + eventIDToRemove + 'from list.');
   self.removeEventById(eventIDToRemove);
 };
+// Calculates the layout height, width, and offset parameters of the events
 MiniCalendar.Calendar.prototype.calcGrid = function() {
   'use strict';
   var self = this;
   console.log('Recalculating Grid Params!');
 
   _.each(self.events, function(event) {
-    event.height = self.calcHeight(event);
-    event.offset = self.calcOffset(event.start);
+    event.height = self.calcEventHeight(event);
+    event.offset = event.start;
   });
 
   self.mapToColumnGroups();
   console.log('Recalculated Grid Params!');
 };
-
-MiniCalendar.Calendar.prototype.calcHeight = function(event) {
+// Calculates the height / duration of the given event
+MiniCalendar.Calendar.prototype.calcEventHeight = function(event) {
   'use strict';
   var self = this;
   return parseInt(event.end - event.start);
 };
-MiniCalendar.Calendar.prototype.calcOffset = function(minutesPastNine) {
+// Calculate and return a string representing the display time of the current event
+MiniCalendar.Calendar.prototype.calcDisplayTime = function(minutesPastStart) {
   'use strict';
   var self = this;
-  return parseInt(minutesPastNine);
-};
-MiniCalendar.Calendar.prototype.calcDisplayTime = function(minutesPastNine) {
-  'use strict';
-  var hours = (parseInt(minutesPastNine/60) + 9) > 9 ? (parseInt(minutesPastNine/60) + 9) : '0' + (parseInt(minutesPastNine/60) + 9);
-  var minutes = minutesPastNine%60 > 9 ? minutesPastNine%60 : '0' + minutesPastNine%60;
+  var hours = ((parseInt(minutesPastStart) + self.calendarStartTime)/60) > 9 ? parseInt((minutesPastStart + self.calendarStartTime)/60) : '0' + parseInt((minutesPastStart + self.calendarStartTime)/60);
+  var minutes = minutesPastStart%60 > 9 ? minutesPastStart%60 : '0' + minutesPastStart%60;
   return hours + ':' + minutes;
 };
+// Clear the events grid of all events
 MiniCalendar.Calendar.prototype.clearGrid = function() {
   'use strict';
   var self = this;
-  console.log('Clearing Grid on el: ' + self.calendarEl);
+  console.log('Clearing Grid on el: ' + self.els.calendar);
 
-  var myNode = document.getElementById(self.calendarEl);
+  var myNode = document.getElementById(self.els.calendar);
   while (myNode.firstChild) {
     myNode.removeChild(myNode.firstChild);
   }
 
-  console.log('Cleared Grid on el: ' + self.calendarEl);
+  console.log('Cleared Grid on el: ' + self.els.calendar);
 };
+// Initialize the markers on the app element
 MiniCalendar.Calendar.prototype.drawMarkers = function() {
   'use strict';
   var self = this;
   console.log('Drawing Markers!');
+  var appEl = $(self.els.app);
 
-  var markersContainer = $(self.markersEl);
-  var startHour = (self.startTime)/60;
-  var endHour = (self.endTime)/60;
+  // Create Calendar Markers Container Layers
+  var calendarMarkersWrapperEl = document.createElement('div');
+  calendarMarkersWrapperEl.id = 'calendar-markers-wrapper';
+  var calendarMarkersEl = document.createElement('div');
+  calendarMarkersEl.id = 'calendar-markers';
 
-  for(var i = self.startTime; i < self.endTime; i = i + 60) {
+  var markersContainer = calendarMarkersEl;
+  var startHour = (self.calendarStartTime)/60;
+  var endHour = (self.calendarEndTime)/60;
+
+  // Add Major and Minor markers to the calendar-markers container
+  for(var i = self.calendarStartTime; i < self.calendarEndTime; i = i + 60) {
     var currentHour = i / 60;
 
-    var minutesAfterStartTime = parseInt(i - self.startTime);
+    var minutesAfterStartTime = parseInt(i - self.calendarStartTime);
 
-    var majorMarker = self.majorMarkerFactory(currentHour);
+    var majorMarker = MiniCalendar.Calendar.majorMarkerFactory(currentHour);
     if(minutesAfterStartTime === 0) {
       majorMarker.style.top = 'auto';
     } else {
       majorMarker.style.top = minutesAfterStartTime + 'px';
     }
 
-    var minorMarker = self.minorMarkerFactory(currentHour);
+    var minorMarker = MiniCalendar.Calendar.minorMarkerFactory(currentHour);
     minorMarker.style.top = (minutesAfterStartTime + 30) + 'px';
 
-    markersContainer.append(majorMarker);
-    markersContainer.append(minorMarker);
+    markersContainer.appendChild(majorMarker);
+    markersContainer.appendChild(minorMarker);
   }
+
+  // Append the markers container and wrapper el to the app el
+  calendarMarkersWrapperEl.appendChild(calendarMarkersEl);
+  appEl.append(calendarMarkersWrapperEl);
 };
+// Initialize the Events container on the app element
+MiniCalendar.Calendar.prototype.drawEventsContainer = function() {
+  'use strict';
+  var self = this;
+  var appEl = $(self.els.app);
+
+  // Create Calendar Events Contaienr Layers
+  var calendarEventsWrapperEl = document.createElement('div');
+  calendarEventsWrapperEl.id = 'calendar-events-wrapper';
+  var calendarEventsBackgroundEl = document.createElement('div');
+  calendarEventsBackgroundEl.id = 'calendar-events-background';
+  var calendarEventsEl = document.createElement('div');
+  calendarEventsEl.id = 'calendar-events';
+
+  // Append them to the appEl
+  calendarEventsBackgroundEl.appendChild(calendarEventsEl);
+  calendarEventsWrapperEl.appendChild(calendarEventsBackgroundEl);
+  appEl.append(calendarEventsWrapperEl);
+};
+// Draws the array of mapped events on the calendar grid
 MiniCalendar.Calendar.prototype.drawGrid = function() {
   'use strict';
   var self = this;
-  console.log('Drawing Grid on el: ' + self.calendarEl);
+  console.log('Drawing Grid on el: ' + self.els.calendar);
   
-  var calendarContainer = $(self.calendarEl);
+  var calendarContainer = $(self.els.calendar);
   calendarContainer.html('');
 
   _.each(self.mappedEvents, function(eventRow){
@@ -261,8 +278,9 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
 
     });
   });
-  console.log('Drew Grid on el: ' + self.calendarEl);
+  console.log('Drew Grid on el: ' + self.els.calendar);
 };
+// Contstructs an event widget given a JSON formatted input object with the name, id, start, and end time
 MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
   'use strict';
   var self = this;
@@ -318,11 +336,10 @@ MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
 
   return divEventContainer;
 };
-MiniCalendar.Calendar.prototype.minorMarkerFactory = function(militaryHour) {
+MiniCalendar.Calendar.minorMarkerFactory = function(militaryHour) {
   'use strict';
-  var self = this;
 
-  var divTimeLabel = self.timeLabelFactory(militaryHour, 30);
+  var divTimeLabel = MiniCalendar.Calendar.timeLabelFactory(parseInt(militaryHour), 30);
   var divMarker = document.createElement('div');
   divMarker.classList.add('marker-minor');
   divMarker.classList.add('right');
@@ -330,11 +347,10 @@ MiniCalendar.Calendar.prototype.minorMarkerFactory = function(militaryHour) {
 
   return divMarker;
 };
-MiniCalendar.Calendar.prototype.majorMarkerFactory = function(militaryHour) {
+MiniCalendar.Calendar.majorMarkerFactory = function(militaryHour) {
   'use strict';
-  var self = this;
   
-  var divTimeLabel = self.timeLabelFactory(militaryHour, 0);
+  var divTimeLabel = MiniCalendar.Calendar.timeLabelFactory(parseInt(militaryHour), 0);
   var divMarker = document.createElement('div');
   divMarker.classList.add('marker-major');
   divMarker.classList.add('right');
@@ -343,9 +359,8 @@ MiniCalendar.Calendar.prototype.majorMarkerFactory = function(militaryHour) {
 
   return divMarker;
 };
-MiniCalendar.Calendar.prototype.timeLabelFactory = function(militaryHour, minutes) {
+MiniCalendar.Calendar.timeLabelFactory = function(militaryHour, minutes) {
   'use strict';
-  var self = this;
   var suffixText;
   var markerText;
   var twelveHour;
@@ -376,7 +391,7 @@ MiniCalendar.Calendar.prototype.timeLabelFactory = function(militaryHour, minute
     divTime: divTime,
     divSuffix: divSuffix
   };
-}
+};
 MiniCalendar.Calendar.prototype.eventsByStart = function() {
   'use strict';
   var self = this;

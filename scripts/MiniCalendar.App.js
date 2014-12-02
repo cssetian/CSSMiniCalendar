@@ -1,19 +1,21 @@
 var MiniCalendar = MiniCalendar || {};
 
+// Basic app that manages a rendered calendar and its associated user-inputs
 MiniCalendar.App = function() {
   'use strict';
   var self = this;
 
-  self.cal = null;
-  self.inputEls = {};
+  self.cal = {};
+  self.appEls = {};
+  self.calOptions = {};
 
   self.init = function(options) {
     console.log('Initializing MiniCalendar App!');
 
     // Define calendar options for Chris's Calendar
-    var calOptions = {
+    self.calOptions = {
       name: options.name,
-      events: options.events,
+      jsonEvents: options.jsonEvents,
       els: {
         container: options.els.container,
         calendar: options.els.calendar,
@@ -22,15 +24,9 @@ MiniCalendar.App = function() {
     };
 
     // Instantiate new Calendar object and initialize
-    self.cal = new MiniCalendar.Calendar(calOptions);
+    self.cal = new MiniCalendar.Calendar(self.calOptions);
 
-    self.calendarEls = {
-      container: options.els.container,
-      calendar: options.els.calendar,
-      markers: options.els.markers
-    };
-
-    self.inputEls = {
+    self.appEls = {
       name: options.els.eventName,
       start: options.els.eventStart,
       end: options.els.eventEnd,
@@ -38,51 +34,39 @@ MiniCalendar.App = function() {
       remove: options.els.removeEvent
     };
 
-    $(self.inputEls.add).on('click', function() {
+    $(self.appEls.add).on('click', self.addEvent);
+
+    console.log('MiniCalendar App For ' + self.cal.name + ' initialized with the following settings!', self.calOptions);
+  };
+
+  self.addEvent = function() {
       console.log('Adding event!');
        
       if(
-          $(self.inputEls.name).val() !== '' &&
-          $(self.inputEls.start).val() !== '' &&
-          $(self.inputEls.end).val() !== ''
+          $(self.appEls.name).val() !== '' &&
+          $(self.appEls.start).val() !== '' &&
+          $(self.appEls.end).val() !== ''
         ) {
-        console.log('Event ' + self.inputEls.name + ' found, adding to list');
+        console.log('Adding event ' + self.appEls.name + ' to list');
 
-        var newEvent = new MiniCalendar.Event({
-          name: $(self.inputEls.name).val(),
-          start: $(self.inputEls.start).val(),
-          end: $(self.inputEls.end).val()
-        });
-        self.cal.addEvent(newEvent);
-        $(self.inputEls.remove).on('click', self.onRemove);
+        var newEventJSON = {
+          name: $(self.appEls.name).val(),
+          start: $(self.appEls.start).val(),
+          end: $(self.appEls.end).val()
+        };
+        self.cal.addEvent(newEventJSON);
+        
+        $(self.appEls.remove).on('click', self.onRemove);
       } else {
         console.log('Please fill out all fields to create a new event!');
       }
-    });
-
-    console.log('MiniCalendar App For ' + self.cal.name + ' initialized!');
   };
 
   self.onRemove = function(e) {
     var eventContainer = e.target.parentElement;
-    //var eventChildren = eventContainer.children;
     var eventId = eventContainer.dataset.eventId;
     console.log('Removing event ' + eventId + '!');
 
-    /*
-    var childId = _.filter(eventChildren, function(child) { return child.event === ['event-id']; })[0];
-    var childName = _.filter(eventChildren, function(child) { return child.classList === ['event-name']; })[0];
-    var childStart = _.filter(eventChildren, function(child) { return child.classList === ['event-start']; })[0];
-    var childEnd = _.filter(eventChildren, function(child) { return child.classList === ['event-end']; })[0];
-
-    var eventToBeRemoved = new MiniCalendar.Event({
-      id: childId,
-      name: childName,  
-      start: childStart,
-      end: childEnd
-    });
-    */
-    //self.cal.removeEvent(eventToBeRemoved);
     self.cal.removeEventById(eventId);
   };
 };

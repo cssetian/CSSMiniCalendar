@@ -14,15 +14,7 @@
     <input type="text" id="input-end" placeholder="Event End" />
     <input type="button" id="add-event" value="Add Event" />
   </div>
-  <div class="calendar-app">
-    <div id="calendar-markers-wrapper">
-      <div id="calendar-markers"></div>
-    </div>
-    <div id="calendar-events-wrapper">
-      <div id="calendar-events-background">
-        <div id="calendar-events"></div>
-      </div>
-    </div>  
+  <div id="calendar-app">
   </div>
   
 
@@ -34,11 +26,22 @@
 <script src="scripts/MiniCalendar.Calendar.js" type="text/javascript"></script>
 <script src="scripts/MiniCalendar.App.js" type="text/javascript"></script>
 <script>
-  $(document).ready(function(){
-    var app = new MiniCalendar.App();
 
-    app.init({
-      els: {
+  // Function to be called from the console to run the app
+  // Call with json-formatted array of events to use custom events
+  // Event Properties:
+  //      name: Title of event
+  //      start: Start time of event
+  //      end: End time of event
+  //      (note: all times are in units of minutes after 9:00AM)
+  var layOutDay;            
+
+  $(document).ready(function(){
+    var app = {};
+
+    // Demo app can be used with other HTML class/id structures
+    var appDefaultOptions = {
+      els: {                            
         container: '#calendar-events-wrapper',
         calendar: '#calendar-events',
         markers: '#calendar-markers',
@@ -49,16 +52,18 @@
         eventStart: '#input-start',
         eventEnd: '#input-end'
       },
-      name: 'Chris\'s Calendar',
-      events: [
-        { start: 0, end: 60, id: 1 },
-        { start: 180, end: 240, id: 4 },
-        { start: 100, end: 180, id: 3 },
-        { start: 60, end: 120, id: 2 },
-        { start: 200, end: 300, id: 5, name: 'Wacky Event' },
-        //{ start: 350, end: 400, id: 6, name: 'Chris\'s weird and crazy-fun Wacky Event' }
-      ]
-    });
+      name: 'Mini-Calendar'
+    };
+
+    // Defines the function exposed publicly if you just open the index.html file
+    layOutDay = function(userEvents) {  
+      // If use does supply array of events in json as a parameter, use those as the data for the App
+      if(userEvents) { appDefaultOptions.events = userEvents; }
+          
+      // Create and initialize a new app
+      app = new MiniCalendar.App();
+      app.init(appDefaultOptions);
+    };
   });
 
 </script>
