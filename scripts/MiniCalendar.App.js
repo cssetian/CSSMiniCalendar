@@ -31,6 +31,7 @@ MiniCalendar.App = function() {
       name: options.els.eventName,
       start: options.els.eventStart,
       end: options.els.eventEnd,
+      location: options.els.eventLocation,
       add: options.els.addEvent,
       remove: options.els.removeEvent
     };
@@ -41,26 +42,16 @@ MiniCalendar.App = function() {
   };
 
   self.addEvent = function() {
-      console.log('Adding event!');
-       
-      if(
-          $(self.appEls.name).val() !== '' &&
-          $(self.appEls.start).val() !== '' &&
-          $(self.appEls.end).val() !== ''
-        ) {
-        console.log('Adding event ' + self.appEls.name + ' to list');
+    console.log('Adding event to calendar!');
 
-        var newEventJSON = {
-          name: $(self.appEls.name).val(),
-          start: $(self.appEls.start).val(),
-          end: $(self.appEls.end).val()
-        };
+        var newEventJSON = {};
+        if ($(self.appEls.name).val() !== '') { newEventJSON.name = $(self.appEls.name).val(); }
+        if ($(self.appEls.start).val() !== '') { newEventJSON.start = $(self.appEls.start).val(); }
+        if ($(self.appEls.end).val() !== '') { newEventJSON.end = $(self.appEls.end).val(); }
+        if ($(self.appEls.location).val() !== '') { newEventJSON.location = $(self.appEls.location).val(); }
+
         self.cal.addEvent(newEventJSON);
-
         $(self.appEls.remove).on('click', self.onRemove);
-      } else {
-        console.log('Please fill out all fields to create a new event!');
-      }
   };
 
   self.onRemove = function(e) {

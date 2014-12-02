@@ -12,7 +12,9 @@
     <input type="text" id="input-name" placeholder="Event Name" />
     <input type="text" id="input-start" placeholder="Event Start" />
     <input type="text" id="input-end" placeholder="Event End" />
+    <input type="text" id="input-location" placeholder="Event Location" />
     <input type="button" id="add-event" value="Add Event" />
+    <input type="button" id="lay-out-day" value="Lay Out Day" onclick="layOutDay()" />
   </div>
   <div id="calendar-app">
   </div>
@@ -48,7 +50,8 @@
         removeEvent: '.remove-event',
         eventName: '#input-name',
         eventStart: '#input-start',
-        eventEnd: '#input-end'
+        eventEnd: '#input-end',
+        eventLocation: '#input-location'
       },
       name: 'Mini-Calendar'
     };
