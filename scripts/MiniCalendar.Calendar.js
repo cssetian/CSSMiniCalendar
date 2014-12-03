@@ -43,6 +43,7 @@ MiniCalendar.Calendar = function(userOptions) {
     jsonEvent.id = self.nextEventId();
     return new MiniCalendar.Event(jsonEvent);
   });
+  self.columns = [];
 
   self.clearGrid();
   self.drawMarkers();
@@ -58,7 +59,8 @@ MiniCalendar.Calendar.prototype.refreshCalendar = function() {
   self.calcGrid();
   self.drawGrid();
 };
-// Maps an array of events to an array of column groups, representing overlapping events
+// Map an array of events to groups of events that overlap with each other
+//      Each group of size N is drawn with equal event widths Calendar_Width/N
 MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
   'use strict';
   var self = this;
@@ -71,8 +73,11 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
     var currentEvent = self.events[i];
     currentBucket.push(currentEvent);
 
+    // Make sure any 2 adjacent events that overlap with each other are in the same bucket of events
+    // This will cause more columns than absolutely necessary, but satisfy the requirement that
+    //      all overlapping events in a given group should have the same Width
     var j = 1;
-    while((i + j) < sortedEvents.length && self.events[i + j].start < currentEvent.end) {
+    while((i + j) < sortedEvents.length && self.events[i + j].overlap(self.events[i + j - 1])) {
       currentBucket.push(self.events[i + j]);
       j++;
     }
@@ -85,6 +90,8 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
       currentBucket[k].widthOffset = (100 / currentBucket.length) * k;
     }
 
+    // Add the current group of columns that overlap to the columnGroup array, 
+    //        then incremement i for all the extra events we iterated over
     columnGroups.push(currentBucket);
     i += j;
   }
@@ -274,17 +281,14 @@ MiniCalendar.Calendar.prototype.drawGrid = function() {
   var calendarContainer = $(self.els.calendar);
   calendarContainer.html('');
 
-  _.each(self.mappedEvents, function(eventRow){
-    _.each(eventRow, function(event) {
-      console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id);
-      var newEventWidget = self.widgetFactory(event);
-      if( event.widthOffset > 0 ) {
-        newEventWidget.style.left = event.widthOffset + '%';
-      }
-      newEventWidget.style.width = event.widthPct + '%';
-      calendarContainer.append(newEventWidget);
-
-    });
+  _.each(self.events, function(event) {
+    console.log('Drawing EventByStart: ' + event.name + '\t\tStart: ' + event.start + '\tEnd: ' + event.end + '\tId: ' + event.id + '\tR: ' + event.row + '\tC: ' + event.col);
+    var newEventWidget = self.widgetFactory(event);
+    if( event.widthOffset > 0 ) {
+      newEventWidget.style.left = event.widthOffset + '%';
+    }
+    newEventWidget.style.width = event.widthPct + '%';
+    calendarContainer.append(newEventWidget);
   });
   console.log('Drew Grid on el: ' + self.els.calendar);
 };

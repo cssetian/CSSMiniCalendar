@@ -10,7 +10,13 @@ MiniCalendar.Event = function(options) {
   self.start = parseInt(options.start) || 0;
   self.end = parseInt(options.end) || 0;
   self.height = '';
-  self.offset = '';
-  self.column = '';
+  self.widthOffset = '';
   self.widthPct = '';
+
+  self.overlap = function(event) {
+    if(event === undefined) {
+      return false;
+    }
+    return (self.start < event.end) && (self.end > event.start);
+  };
 };
