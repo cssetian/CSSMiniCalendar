@@ -17,6 +17,6 @@ MiniCalendar.Event = function(options) {
     if(event === undefined) {
       return false;
     }
-    return (self.start < event.end) && (self.end > event.start);
+    return (self.start < event.end) && (self.end > event.start) || (event.start < self.end) && (event.end > self.start) ;
   };
 };
