@@ -21,6 +21,7 @@ MiniCalendar.Calendar = function(userOptions) {
     endTime: (9 + 12) * 60,
     jsonEvents: [
       { start: 0, end: 60 },
+      { start: 10, end: 140 },
       { start: 180, end: 240 },
       { start: 100, end: 180 },
       { start: 60, end: 120 },
@@ -29,18 +30,16 @@ MiniCalendar.Calendar = function(userOptions) {
   };
   self.mergedOptions = $.extend(true, self.defaultOptions, userOptions);
 
-  self.els = self.mergedOptions.els;
-
-  self.currentEventId = 0;
-  self.nextEventId = function() { return self.currentEventId++; };
-
   self.name = self.mergedOptions.name;
+  self.currentEventId = 1;
+  self.nextEventId = function() { return self.currentEventId++; };
   self.calendarStartTime = parseInt(self.mergedOptions.startTime);
   self.calendarEndTime = parseInt(self.mergedOptions.endTime);
+  self.els = self.mergedOptions.els;
 
   // Initialize user-defined events that are passed in JSON as MiniCalendar.Event objects
   self.mappedEvents = [];
-  self.events = _.map(self.defaultOptions.jsonEvents, function(jsonEvent) {
+  self.events = _.map(self.mergedOptions.jsonEvents, function(jsonEvent) {
     jsonEvent.id = self.nextEventId();
     return new MiniCalendar.Event(jsonEvent);
   });
@@ -48,7 +47,6 @@ MiniCalendar.Calendar = function(userOptions) {
   self.clearGrid();
   self.drawMarkers();
   self.drawEventsContainer();
-
   self.refreshCalendar();
   console.log(self.name + ' initialized!');
 };
@@ -56,6 +54,7 @@ MiniCalendar.Calendar = function(userOptions) {
 MiniCalendar.Calendar.prototype.refreshCalendar = function() {
   'use strict';
   var self = this;
+  self.clearGrid();
   self.calcGrid();
   self.drawGrid();
 };
@@ -65,13 +64,10 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
   var self = this;
 
   var columnGroups = [];
-  var currentColumn;
-  var lastEnd = -100000000000000000000;
   var sortedEvents = self.events.sort(MiniCalendar.Calendar.startSortComparator);
 
   for(var i = 0; i < sortedEvents.length;) {
     var currentBucket = [];
-
     var currentEvent = self.events[i];
     currentBucket.push(currentEvent);
 
@@ -106,15 +102,33 @@ MiniCalendar.Calendar.startSortComparator = function(firstEvent, secondEvent) {
     return endDifference;
   }
 };
+MiniCalendar.Calendar.prototype.isBetweenStartAndEndTime = function(time) {
+  'use strict';
+  var self = this;
+  return time >= 0 && time <= self.calendarEndTime - self.calendarStartTime;
+};
 // Adds an event to the calendar given an event name, start time, and end time in a JSON object
 MiniCalendar.Calendar.prototype.addEvent = function(newEventJSON) {
   'use strict';
   var self = this;
+
+  if(!self.isBetweenStartAndEndTime(newEventJSON.start) || !self.isBetweenStartAndEndTime(newEventJSON.end)) {
+    alert('Please specify a start and end time within the time range of the Calendar!');
+    return;
+  }
+
+  if(!newEventJSON.name) {
+    newEventJSON.name = 'Sample Item';
+  }
+
   console.log('Adding event to MiniCalendar!');
-  var doesEventExist = _.findWhere(self.events, { name: newEventJSON.name, start: newEventJSON.start, end: newEventJSON.end });
+  var doesEventExist = _.find(self.events, function(event) {
+    return event.name === newEventJSON.name && event.start === newEventJSON.start &&  event.end === newEventJSON.end;
+  });
 
   if(doesEventExist !== undefined) {
-    console.log('Event already present in events list!');
+    alert('Event already present in events list!');
+    return;
   } else {
     newEventJSON.id = self.nextEventId();
     var newEvent = new MiniCalendar.Event(newEventJSON);
@@ -189,11 +203,7 @@ MiniCalendar.Calendar.prototype.clearGrid = function() {
   'use strict';
   var self = this;
   console.log('Clearing App El');
-
-  var myAppNode = document.getElementById(self.els.app);
-  while (myAppNode && myAppNode.hasChildren && myAppNode.firstChild) {
-    myAppNode.removeChild(myAppNode.firstChild);
-  }
+  $(self.els.calendar).html('');
 };
 // Initialize the markers on the app element
 MiniCalendar.Calendar.prototype.drawMarkers = function() {

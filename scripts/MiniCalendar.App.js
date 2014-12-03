@@ -19,9 +19,12 @@ MiniCalendar.App = function() {
       els: {
         container: options.els.container,
         calendar: options.els.calendar,
-        markers: options.els.markers
+        markers: options.els.markers,
+        app: options.els.app
       }
     };
+
+    self.clearApp();
 
     // Instantiate new Calendar object and initialize
     self.cal = new MiniCalendar.Calendar(self.calOptions);
@@ -41,17 +44,27 @@ MiniCalendar.App = function() {
     console.log('MiniCalendar App For ' + self.cal.name + ' initialized with the following settings!', self.calOptions);
   };
 
+  self.clearApp = function() {
+    var self = this;
+    $(self.calOptions.els.app).html('');
+  };
+
   self.addEvent = function() {
     console.log('Adding event to calendar!');
 
-        var newEventJSON = {};
-        if ($(self.appEls.name).val() !== '') { newEventJSON.name = $(self.appEls.name).val(); }
-        if ($(self.appEls.start).val() !== '') { newEventJSON.start = $(self.appEls.start).val(); }
-        if ($(self.appEls.end).val() !== '') { newEventJSON.end = $(self.appEls.end).val(); }
-        if ($(self.appEls.location).val() !== '') { newEventJSON.location = $(self.appEls.location).val(); }
+    if($(self.appEls.start).val() === "" || $(self.appEls.end).val() === "" ) {
+      alert('Please specify both a start and an end time!');
+      return;
+    }
 
-        self.cal.addEvent(newEventJSON);
-        $(self.appEls.remove).on('click', self.onRemove);
+      var newEventJSON = {};
+      if ($(self.appEls.name).val() !== '') { newEventJSON.name = $(self.appEls.name).val(); }
+      if ($(self.appEls.start).val() !== '') { newEventJSON.start = parseInt($(self.appEls.start).val()); }
+      if ($(self.appEls.end).val() !== '') { newEventJSON.end = parseInt($(self.appEls.end).val()); }
+      if ($(self.appEls.location).val() !== '') { newEventJSON.location = $(self.appEls.location).val(); }
+
+      self.cal.addEvent(newEventJSON);
+      $(self.appEls.remove).on('click', self.onRemove);
   };
 
   self.onRemove = function(e) {
