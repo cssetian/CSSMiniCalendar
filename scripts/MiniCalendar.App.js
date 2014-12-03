@@ -22,6 +22,9 @@ MiniCalendar.App = function() {
         app: options.els.app
       }
     };
+    if(options.jsonEvents) {
+      self.calOptions.jsonEvents = options.jsonEvents;
+    }
 
     self.clearApp();
 

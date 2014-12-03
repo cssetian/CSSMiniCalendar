@@ -340,6 +340,9 @@ MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
   // Create Event Container Element To Hold All Component Elements
   var divEventContainer = document.createElement('div');
   divEventContainer.classList.add('event-container');
+  if(event.end - event.start < 45) { 
+    divEventContainer.classList.add('inline-event');
+  }
   divEventContainer.setAttribute('data-event-id', event.id);
   divEventContainer.style.height = event.height + 'px';
   if(event.offset < 1) {
