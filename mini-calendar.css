@@ -19,12 +19,15 @@ body { font-family: sans-serif; }
 /* Margins and Padding */
 #calendar-app { margin: 10px; }
 .module {  margin: 10px 0; }
+.module.info { padding-bottom: 5px; }
 .remove-event {
   padding: 5px;
   cursor: pointer;
   right: 0;
   bottom: 0;
 }
+h1, h3 { margin-bottom: 2px; }
+.subtitle { padding-left: 10px; }
 .event-container, .marker-container { padding: 2px; }
 #calendar-events-wrapper { padding: 0 10px; }
 #calendar-markers-wrapper { padding: 0 5px; }

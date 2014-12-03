@@ -15,7 +15,6 @@ MiniCalendar.App = function() {
     // Define calendar options for Chris's Calendar
     self.calOptions = {
       name: options.name,
-      jsonEvents: options.jsonEvents,
       els: {
         container: options.els.container,
         calendar: options.els.calendar,
@@ -57,12 +56,14 @@ MiniCalendar.App = function() {
       return;
     }
 
+      // Read input values
       var newEventJSON = {};
       if ($(self.appEls.name).val() !== '') { newEventJSON.name = $(self.appEls.name).val(); }
       if ($(self.appEls.start).val() !== '') { newEventJSON.start = parseInt($(self.appEls.start).val()); }
       if ($(self.appEls.end).val() !== '') { newEventJSON.end = parseInt($(self.appEls.end).val()); }
       if ($(self.appEls.location).val() !== '') { newEventJSON.location = $(self.appEls.location).val(); }
 
+      // Create new event and wire up remove button
       self.cal.addEvent(newEventJSON);
       $(self.appEls.remove).on('click', self.onRemove);
   };

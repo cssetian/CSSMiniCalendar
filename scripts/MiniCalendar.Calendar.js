@@ -25,7 +25,8 @@ MiniCalendar.Calendar = function(userOptions) {
       { start: 180, end: 240 },
       { start: 100, end: 180 },
       { start: 60, end: 120 },
-      { start: 200, end: 300 }
+      { start: 200, end: 300 },
+      { start: 360, end: 450 }
     ]
   };
   self.mergedOptions = $.extend(true, self.defaultOptions, userOptions);
@@ -96,6 +97,7 @@ MiniCalendar.Calendar.prototype.mapToColumnGroups = function() {
     i += j;
   }
 
+  console.log('Mapped Column Groups - ', columnGroups);
   self.mappedEvents = columnGroups;
 };
 // Comparator for sorting an array of events - First by start time, then by end time
