@@ -1,6 +1,6 @@
 var MiniCalendar = MiniCalendar || {};
 
-// Basic app that manages a rendered calendar and its associated user-inputs
+// Basic app that manages a rendered calendar and its associated actions
 MiniCalendar.App = function() {
   'use strict';
   var self = this;
@@ -46,11 +46,15 @@ MiniCalendar.App = function() {
     console.log('MiniCalendar App For ' + self.cal.name + ' initialized with the following settings!', self.calOptions);
   };
 
+  // Clear the calendar container from the page
   self.clearApp = function() {
     var self = this;
     $(self.calOptions.els.app).html('');
   };
 
+  // Add an event to the calendar (assuming it has been
+  //        instantiated through a button or console call 
+  //        to layOutDay) by reading from user inputs
   self.addEvent = function() {
     console.log('Adding event to calendar!');
 
@@ -59,23 +63,36 @@ MiniCalendar.App = function() {
       return;
     }
 
-      // Read input values
-      var newEventJSON = {};
-      if ($(self.appEls.name).val() !== '') { newEventJSON.name = $(self.appEls.name).val(); }
-      if ($(self.appEls.start).val() !== '') { newEventJSON.start = parseInt($(self.appEls.start).val()); }
-      if ($(self.appEls.end).val() !== '') { newEventJSON.end = parseInt($(self.appEls.end).val()); }
-      if ($(self.appEls.location).val() !== '') { newEventJSON.location = $(self.appEls.location).val(); }
+    // Read input values
+    var newEventJSON = {};
+    if ($(self.appEls.name).val() !== '') { newEventJSON.name = $(self.appEls.name).val(); }
+    if ($(self.appEls.start).val() !== '') { newEventJSON.start = parseInt($(self.appEls.start).val()); }
+    if ($(self.appEls.end).val() !== '') { newEventJSON.end = parseInt($(self.appEls.end).val()); }
+    if ($(self.appEls.location).val() !== '') { newEventJSON.location = $(self.appEls.location).val(); }
 
-      // Create new event and wire up remove button
-      self.cal.addEvent(newEventJSON);
-      $(self.appEls.remove).on('click', self.onRemove);
+    // Add new element by recreating the calendar. 
+    // Can probably be improved upon to require
+    //      less rendering, i.e. just changing 
+    //      specific event items that moved
+    var currentEvents = self.cal.events;
+    currentEvents.push(newEventJSON);
+    
+    var options = self.calOptions;
+    options.jsonEvents = currentEvents;
+
+    self.clearApp();
+    self.cal = new MiniCalendar.Calendar(options);
+
+    //self.cal.addEvent(newEventJSON);
+    $(self.appEls.remove).on('click', self.onRemove);
   };
 
+  // Remove an event from the calendar using its 'remove' button
   self.onRemove = function(e) {
     var eventContainer = e.target.parentElement;
     var eventId = eventContainer.dataset.eventId;
-    console.log('Removing event ' + eventId + '!');
 
+    console.log('Removing event ' + eventId + '!');
     self.cal.removeEventById(eventId);
   };
 };
