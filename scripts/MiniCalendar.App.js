@@ -42,6 +42,7 @@ MiniCalendar.App = function() {
     };
 
     $(self.appEls.add).on('click', self.addEvent);
+    $(self.appEls.remove).on('click', self.onRemove);
 
     console.log('MiniCalendar App For ' + self.cal.name + ' initialized with the following settings!', self.calOptions);
   };
@@ -76,7 +77,7 @@ MiniCalendar.App = function() {
     //      specific event items that moved
     var currentEvents = self.cal.events;
     currentEvents.push(newEventJSON);
-    
+
     var options = self.calOptions;
     options.jsonEvents = currentEvents;
 
@@ -92,7 +93,19 @@ MiniCalendar.App = function() {
     var eventContainer = e.target.parentElement;
     var eventId = eventContainer.dataset.eventId;
 
-    console.log('Removing event ' + eventId + '!');
-    self.cal.removeEventById(eventId);
+    var currentEvents = self.cal.events;
+    var newEvents = _.filter(currentEvents, function(event) {
+      return parseInt(event.id) !== parseInt(eventId);
+    });
+    
+    var options = self.calOptions;
+    options.jsonEvents = newEvents;
+
+    self.clearApp();
+    self.cal = new MiniCalendar.Calendar(options);
+
+    $(self.appEls.remove).on('click', self.onRemove);
+    console.log('Removed event ' + eventId + '!');
+    //self.cal.removeEventById(eventId);
   };
 };

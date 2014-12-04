@@ -30,6 +30,7 @@ MiniCalendar.Calendar = function(userOptions) {
     ]
   };
   self.mergedOptions = $.extend(true, self.defaultOptions, userOptions);
+  self.mergedOptions.jsonEvents = userOptions.jsonEvents ? userOptions.jsonEvents : self.defaultOptions.jsonEvents;
 
   self.name = self.mergedOptions.name;
   self.currentEventId = 1;
@@ -392,7 +393,7 @@ MiniCalendar.Calendar.prototype.widgetFactory = function(event) {
   divRemoveEventButton.classList.add('remove-event');
   var removeEventButtonText = document.createTextNode('remove event');
   divRemoveEventButton.appendChild(removeEventButtonText);
-  divRemoveEventButton.addEventListener('click', self.removeEventByEl.bind(self));
+  //divRemoveEventButton.addEventListener('click', self.removeEventByEl.bind(self));
 
   // Create Event Container Element To Hold All Component Elements
   var divEventContainer = document.createElement('div');
